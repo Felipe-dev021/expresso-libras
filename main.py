@@ -1,14 +1,14 @@
-"""Ponto de entrada e loop principal do jogo Sinal Aberto.
+"""Ponto de entrada e loop principal do jogo Expresso Libras.
 
-Orquestra a maquina de estados (menu, instrucoes, briefing, jogando, mural,
-pausa e telas finais), eventos de teclado e mouse, audio, colisoes,
-interacoes em Libras e persistencia de progresso.
+Renderiza nativamente em Full HD (1920x1080) com abertura em Tela Cheia real
+e botao/atalho [F11] para alternar com Modo Janela redimensionavel (1280x720),
+mantendo nitidez maxima e mapeamento preciso de cliques do mouse.
 """
 
 import math
 import os
 import sys
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 import pygame
 
@@ -19,6 +19,8 @@ from config import (
     BONUS_RAPIDEZ_MAX,
     BONUS_SEM_MURAL,
     FPS,
+    JANELA_ALTURA,
+    JANELA_LARGURA,
     LARGURA,
     PASTA_DATA,
     PONTOS_ACERTO_BASE,
@@ -47,10 +49,10 @@ def _garantir_assets() -> None:
 
 
 class JogoSinalAberto:
-    """Controlador principal do jogo 2D de atendimento inclusivo em Libras."""
+    """Controlador principal do jogo 2.5D de atendimento inclusivo em Libras."""
 
     def __init__(self) -> None:
-        """Inicializa Pygame, mixer de audio, assets, entidades e estado inicial."""
+        """Inicializa Pygame em Tela Cheia Full HD, audio, assets e estado inicial."""
         _garantir_assets()
         pygame.init()
         try:
@@ -59,8 +61,10 @@ class JogoSinalAberto:
         except pygame.error:
             self.audio_disponivel = False
 
-        self.tela_cheia = False
-        self.tela = pygame.display.set_mode((LARGURA, ALTURA), pygame.SCALED)
+        # Canvas logico em Full HD 1920x1080 (qualidade maxima sem pixelizacao)
+        self.canvas = pygame.Surface((LARGURA, ALTURA))
+        self.tela_cheia = True
+        self.janela = self._criar_display(tela_cheia=True)
         pygame.display.set_caption(TITULO_JOGO)
         self.relogio = pygame.time.Clock()
 
@@ -69,9 +73,8 @@ class JogoSinalAberto:
         self.libras = BibliotecaLibras()
         self.particulas = SistemaParticulas()
         self.fases = GerenciadorFases()
-        self.jogador = Atendente(LARGURA // 2, 390)
+        self.jogador = Atendente(LARGURA // 2, 680)
 
-        # Aplica preferencias de acessibilidade salvas
         prefs = self.save.dados.get("preferencias", {})
         self.hud.alto_contraste = bool(prefs.get("alto_contraste", False))
         self.hud.fonte_grande = bool(prefs.get("fonte_grande", False))
@@ -82,15 +85,48 @@ class JogoSinalAberto:
         self.sons: Dict[str, pygame.mixer.Sound] = {}
         self._carregar_sons()
 
-        # Maquina de estados:
-        # menu, instrucoes, briefing, jogando, mural, pausa,
-        # vitoria_fase, derrota, vitoria_final
         self.estado = "menu"
         self.score = 0
         self.vidas = VIDAS_INICIAIS
         self.mensagem_barra = ""
         self.tempo_mensagem = 0.0
         self.rodando = True
+
+    def _criar_display(self, tela_cheia: bool) -> pygame.Surface:
+        """Cria a janela real em Tela Cheia nativa (ate Full HD+) ou Janela 1280x720."""
+        if tela_cheia:
+            try:
+                tamanhos = pygame.display.get_desktop_sizes()
+                dw, dh = tamanhos[0] if tamanhos else (LARGURA, ALTURA)
+                # Limita a Full HD (1920x1080) caso o monitor seja maior, mantendo 16:9 nitido
+                w = min(dw, LARGURA) if dw >= 1280 else dw
+                h = min(dh, ALTURA) if dh >= 720 else dh
+                return pygame.display.set_mode((w, h), pygame.FULLSCREEN)
+            except pygame.error:
+                return pygame.display.set_mode((JANELA_LARGURA, JANELA_ALTURA), pygame.RESIZABLE)
+        return pygame.display.set_mode((JANELA_LARGURA, JANELA_ALTURA), pygame.RESIZABLE)
+
+    def _calcular_ret_destino(self) -> pygame.Rect:
+        """Calcula o retangulo proporcional 16:9 onde o canvas 1920x1080 sera exibido."""
+        jw, jh = self.janela.get_size()
+        escala = min(jw / LARGURA, jh / ALTURA)
+        dw = max(1, int(round(LARGURA * escala)))
+        dh = max(1, int(round(ALTURA * escala)))
+        dx = (jw - dw) // 2
+        dy = (jh - dh) // 2
+        return pygame.Rect(dx, dy, dw, dh)
+
+    def _converter_mouse(self, pos: Tuple[int, int]) -> Tuple[int, int]:
+        """Converte coordenadas do mouse da janela/tela cheia para o canvas 1920x1080."""
+        dest = self._calcular_ret_destino()
+        mx = int((pos[0] - dest.x) * LARGURA / dest.width)
+        my = int((pos[1] - dest.y) * ALTURA / dest.height)
+        return mx, my
+
+    def _alternar_tela_cheia(self) -> None:
+        """Alterna entre Tela Cheia real e Modo Janela redimensionavel (1280x720)."""
+        self.tela_cheia = not self.tela_cheia
+        self.janela = self._criar_display(self.tela_cheia)
 
     def _carregar_sons(self) -> None:
         """Carrega trilha sonora em loop e efeitos sonoros WAV da pasta data/."""
@@ -121,12 +157,6 @@ class JogoSinalAberto:
         self.mensagem_barra = texto
         self.tempo_mensagem = duracao
 
-    def _alternar_tela_cheia(self) -> None:
-        """Alterna entre modo janela e tela cheia mantendo proporcao 1024x640."""
-        self.tela_cheia = not self.tela_cheia
-        flags = pygame.SCALED | (pygame.FULLSCREEN if self.tela_cheia else 0)
-        self.tela = pygame.display.set_mode((LARGURA, ALTURA), flags)
-
     def _alternar_mudo(self) -> None:
         """Liga ou desliga sons e musica salvando a preferencia do jogador."""
         self.mudo = not self.mudo
@@ -146,7 +176,7 @@ class JogoSinalAberto:
         """Configura o estado para o briefing de uma fase especifica."""
         self.vidas = VIDAS_INICIAIS
         self.fases.iniciar_fase(indice)
-        self.jogador.resetar(LARGURA // 2, 390)
+        self.jogador.resetar(LARGURA // 2, 680)
         self.particulas.limpar()
         self.mensagem_barra = ""
         self.estado = "briefing"
@@ -167,17 +197,16 @@ class JogoSinalAberto:
                 melhor_est = est
 
         melhor_cli: Optional[Cliente] = None
-        dist_cli = RAIO_INTERACAO + 42.0  # alcanca atraves do balcao
+        dist_cli = RAIO_INTERACAO + 76.0  # alcanca atraves do balcao
         for cli in self.fases.grupo_clientes:
             cli.destacado = False
             if cli.estado != "esperando":
                 continue
-            d = math.hypot(cli.rect.centerx - px, (cli.rect.centery + 52) - py)
+            d = math.hypot(cli.rect.centerx - px, (cli.rect.centery + 90) - py)
             if d < dist_cli:
                 dist_cli = d
                 melhor_cli = cli
 
-        # Prioriza quem estiver mais proximo
         if melhor_est and melhor_cli:
             if dist_est <= dist_cli:
                 melhor_est.destacada = True
@@ -208,7 +237,7 @@ class JogoSinalAberto:
                     self.particulas.adicionar_texto(
                         "Item descartado",
                         estacao.rect.centerx,
-                        estacao.rect.top - 10,
+                        estacao.rect.top - 16,
                         p["texto_claro"],
                     )
                 return
@@ -217,18 +246,17 @@ class JogoSinalAberto:
                 self._tocar("pegar")
                 nome = SINAIS_LIBRAS[estacao.sinal_associado]["nome"].split("/")[0].strip()
                 self.particulas.emitir_explosao(
-                    estacao.rect.centerx, estacao.rect.centery, p["destaque"], 8
+                    estacao.rect.centerx, estacao.rect.centery, p["destaque"], 10
                 )
                 self.particulas.adicionar_texto(
                     f"Pegou: {nome}",
                     self.jogador.rect.centerx,
-                    self.jogador.rect.top - 14,
+                    self.jogador.rect.top - 22,
                     p["amarelo"],
                 )
             return
 
         if cliente is not None:
-            # 1. Se o cliente esta cumprimentando (OI), responde em Libras
             if cliente.precisa_oi:
                 ok, tempo = cliente.cumprimentar()
                 if ok:
@@ -237,15 +265,14 @@ class JogoSinalAberto:
                     self.score += 30
                     self._tocar("acerto")
                     self.particulas.emitir_explosao(
-                        cliente.rect.centerx, cliente.rect.centery, p["azul"], 10
+                        cliente.rect.centerx, cliente.rect.centery, p["azul"], 12
                     )
                     self.particulas.adicionar_texto(
-                        "OI! +30", cliente.rect.centerx, cliente.rect.top - 20, p["azul"]
+                        "OI! +30", cliente.rect.centerx, cliente.rect.top - 30, p["azul"]
                     )
                     self._definir_mensagem("Cumprimento acolhedor! Veja o pedido em Libras.")
                 return
 
-            # 2. Entrega do item preparado
             if not self.jogador.item_na_mao:
                 self._definir_mensagem("Va ate a estacao do sinal para pegar o item!")
                 self._tocar("erro")
@@ -273,10 +300,10 @@ class JogoSinalAberto:
                 self.score += ganho
                 self._tocar("acerto")
                 self.particulas.emitir_explosao(
-                    cliente.rect.centerx, cliente.rect.centery, p["verde"], 18
+                    cliente.rect.centerx, cliente.rect.centery, p["verde"], 22
                 )
                 self.particulas.adicionar_texto(
-                    f"+{ganho}!", cliente.rect.centerx, cliente.rect.top - 22, p["verde"]
+                    f"+{ganho}!", cliente.rect.centerx, cliente.rect.top - 32, p["verde"]
                 )
 
                 if self.fases.fase_concluida():
@@ -288,12 +315,12 @@ class JogoSinalAberto:
                 info_esp = SINAIS_LIBRAS[esperado]
                 nome_esp = info_esp["nome"].split("/")[0].strip()
                 self.particulas.emitir_explosao(
-                    cliente.rect.centerx, cliente.rect.centery, p["vermelho"], 12
+                    cliente.rect.centerx, cliente.rect.centery, p["vermelho"], 14
                 )
                 self.particulas.adicionar_texto(
                     f"Era: {nome_esp}!",
                     cliente.rect.centerx,
-                    cliente.rect.top - 22,
+                    cliente.rect.top - 32,
                     p["vermelho"],
                 )
                 self._definir_mensagem(
@@ -317,11 +344,12 @@ class JogoSinalAberto:
         else:
             self.estado = "vitoria_fase"
 
-    def _processar_clique(self, pos: tuple[int, int]) -> None:
-        """Trata cliques de mouse nos botoes das telas de interface."""
+    def _processar_clique(self, pos_janela: Tuple[int, int]) -> None:
+        """Trata cliques de mouse convertidos para o canvas Full HD."""
+        pos = self._converter_mouse(pos_janela)
         for chave, ret in self.hud.botoes_clicaveis.items():
             if ret.collidepoint(pos):
-                if chave == "jogar" or chave == "jogar_novamente":
+                if chave in ("jogar", "jogar_novamente"):
                     self._iniciar_nova_partida()
                 elif chave == "instrucoes":
                     self.estado = "instrucoes"
@@ -336,6 +364,12 @@ class JogoSinalAberto:
                     self.estado = "jogando"
                 elif chave == "proxima_fase":
                     self._preparar_fase(self.fases.indice_fase + 1)
+                elif chave == "alternar_tela":
+                    self._alternar_tela_cheia()
+                elif chave == "abrir_mural" and self.estado == "jogando":
+                    self.fases.registrar_consulta_mural()
+                    self.estado = "mural"
+                    self._tocar("pegar")
                 break
 
     def _processar_eventos(self) -> None:
@@ -344,6 +378,12 @@ class JogoSinalAberto:
             if evento.type == pygame.QUIT:
                 self.rodando = False
                 return
+
+            if evento.type == pygame.VIDEORESIZE and not self.tela_cheia:
+                w = max(640, evento.w)
+                h = max(360, evento.h)
+                self.janela = pygame.display.set_mode((w, h), pygame.RESIZABLE)
+                continue
 
             if evento.type == pygame.MOUSEBUTTONDOWN and evento.button == 1:
                 self._processar_clique(evento.pos)
@@ -354,7 +394,6 @@ class JogoSinalAberto:
 
             tecla = evento.key
 
-            # Atalhos globais (tela cheia e acessibilidade) funcionam em qualquer tela
             if tecla == pygame.K_F11 or (
                 tecla == pygame.K_RETURN and (evento.mod & pygame.KMOD_ALT)
             ):
@@ -376,7 +415,6 @@ class JogoSinalAberto:
                 self._alternar_mudo()
                 continue
 
-            # Eventos especificos por estado da maquina
             if self.estado == "menu":
                 if tecla in (pygame.K_RETURN, pygame.K_SPACE):
                     self._iniciar_nova_partida()
@@ -437,6 +475,7 @@ class JogoSinalAberto:
 
     def _atualizar(self, dt: float) -> None:
         """Atualiza animacoes, jogador, clientes e particulas no estado ativo."""
+        self.hud.definir_mouse_canvas(self._converter_mouse(pygame.mouse.get_pos()))
         self.libras.atualizar(dt)
 
         if self.estado != "jogando":
@@ -462,66 +501,80 @@ class JogoSinalAberto:
                 self.estado = "derrota"
 
         # Vapor suave saindo da maquina de cafe (estacao na esquerda)
-        self.particulas.emitir_vapor(136, 304, dt)
+        self.particulas.emitir_vapor(248, 505, dt)
         self.particulas.atualizar(dt)
 
-    def _desenhar_cena_jogo(self) -> None:
-        """Renderiza o cenario, estacoes, clientes, jogador, baloes e HUD."""
-        self.hud.desenhar_cenario(self.tela)
+    def _desenhar_cena_jogo(self, limpar_botoes_hud: bool = True) -> None:
+        """Renderiza o cenario 2.5D, estacoes, clientes, jogador, baloes e HUD."""
+        self.hud.desenhar_cenario(self.canvas)
 
-        # Clientes atras do balcao
-        self.fases.grupo_clientes.draw(self.tela)
+        self.fases.grupo_clientes.draw(self.canvas)
 
-        # Estacoes e jogador ordenados por Y (profundidade 2.5D)
         desenhaveis = list(self.fases.grupo_estacoes) + [self.jogador]
         desenhaveis.sort(key=lambda sp: sp.rect.bottom)
         for sp in desenhaveis:
-            self.tela.blit(sp.image, sp.rect)
+            self.canvas.blit(sp.image, sp.rect)
 
         for est in self.fases.grupo_estacoes:
-            est.desenhar_rotulo(self.tela, self.hud.f_peq, self.hud.paleta)
+            est.desenhar_rotulo(self.canvas, self.hud.f_peq, self.hud.paleta)
 
-        self.jogador.desenhar_extras(self.tela)
+        self.jogador.desenhar_extras(self.canvas)
 
-        # Baloes de Libras por cima de tudo no cenario
         for cli in self.fases.grupo_clientes:
             cli.desenhar_balao(
-                self.tela, self.libras, self.hud.f_peq, self.hud.paleta
+                self.canvas, self.libras, self.hud.f_peq, self.hud.paleta
             )
 
-        self.particulas.desenhar(self.tela, self.hud.f_flutuante)
+        self.particulas.desenhar(self.canvas, self.hud.f_flutuante)
         self.hud.desenhar_hud(
-            self.tela,
+            self.canvas,
             self.fases,
             self.score,
             self.vidas,
             self.mudo,
+            self.tela_cheia,
             self.mensagem_barra,
+            limpar_botoes=limpar_botoes_hud,
         )
 
+    def _apresentar_canvas(self) -> None:
+        """Transfere o canvas Full HD 1920x1080 para a janela/tela cheia com nitidez."""
+        jw, jh = self.janela.get_size()
+        if jw == LARGURA and jh == ALTURA:
+            self.janela.blit(self.canvas, (0, 0))
+        else:
+            dest = self._calcular_ret_destino()
+            self.janela.fill((0, 0, 0))
+            escalado = pygame.transform.smoothscale(self.canvas, (dest.width, dest.height))
+            self.janela.blit(escalado, dest.topleft)
+        pygame.display.flip()
+
     def _desenhar(self) -> None:
-        """Desenha o quadro atual conforme a maquina de estados."""
+        """Desenha o quadro atual no canvas 1920x1080 e apresenta na tela."""
         if self.estado == "menu":
             self.hud.desenhar_menu(
-                self.tela, self.save.dados["melhor_score"], self.libras
+                self.canvas,
+                self.save.dados["melhor_score"],
+                self.libras,
+                self.tela_cheia,
             )
         elif self.estado == "instrucoes":
-            self.hud.desenhar_instrucoes(self.tela)
+            self.hud.desenhar_instrucoes(self.canvas)
         elif self.estado == "briefing":
-            self.hud.desenhar_briefing(self.tela, self.fases, self.libras)
+            self.hud.desenhar_briefing(self.canvas, self.fases, self.libras)
         elif self.estado == "jogando":
-            self._desenhar_cena_jogo()
+            self._desenhar_cena_jogo(limpar_botoes_hud=True)
         elif self.estado == "mural":
-            self._desenhar_cena_jogo()
-            self.hud.desenhar_mural(self.tela, self.libras)
+            self._desenhar_cena_jogo(limpar_botoes_hud=False)
+            self.hud.desenhar_mural(self.canvas, self.libras)
         elif self.estado == "pausa":
-            self._desenhar_cena_jogo()
-            self.hud.desenhar_pausa(self.tela)
+            self._desenhar_cena_jogo(limpar_botoes_hud=False)
+            self.hud.desenhar_pausa(self.canvas, self.tela_cheia)
         elif self.estado in ("vitoria_fase", "derrota", "vitoria_final"):
-            self._desenhar_cena_jogo()
-            self.hud.desenhar_resultado(self.tela, self.estado, self.fases, self.score)
+            self._desenhar_cena_jogo(limpar_botoes_hud=False)
+            self.hud.desenhar_resultado(self.canvas, self.estado, self.fases, self.score)
 
-        pygame.display.flip()
+        self._apresentar_canvas()
 
     def executar(self) -> None:
         """Loop principal travado a 60 FPS com delta time independente de hardware."""
