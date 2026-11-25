@@ -20,8 +20,12 @@ def _garantir_pasta() -> None:
     os.makedirs(PASTA_DATA, exist_ok=True)
 
 
-def _salvar_png(superficie: pygame.Surface, nome: str) -> None:
-    """Salva uma Surface com transparencia em data/<nome>."""
+def _salvar_png(superficie: pygame.Surface, nome: str, escala_hd: float = 1.0) -> None:
+    """Salva uma Surface com transparencia em data/<nome>, opcionalmente em alta definicao."""
+    if escala_hd != 1.0:
+        w = int(round(superficie.get_width() * escala_hd))
+        h = int(round(superficie.get_height() * escala_hd))
+        superficie = pygame.transform.smoothscale(superficie, (w, h))
     pygame.image.save(superficie, os.path.join(PASTA_DATA, nome))
 
 
@@ -126,7 +130,7 @@ def gerar_atendente() -> None:
             pygame.draw.circle(surf, (255, 255, 255), (ex - 1, 19), 1)
         pygame.draw.arc(surf, (156, 74, 60), (28, 21, 12, 8), math.pi + 0.25, 2 * math.pi - 0.25, 2)
 
-        _salvar_png(surf, f"atendente_{passo}.png")
+        _salvar_png(surf, f"atendente_{passo}.png", escala_hd=1.65)
 
 
 def gerar_clientes() -> None:
@@ -195,7 +199,7 @@ def gerar_clientes() -> None:
             pygame.draw.circle(surf, (255, 255, 255), (ex - 1, 20), 1)
         pygame.draw.arc(surf, (136, 62, 52), (28, 23, 12, 7), math.pi + 0.25, 2 * math.pi - 0.25, 2)
 
-        _salvar_png(surf, f"cliente_{idx}.png")
+        _salvar_png(surf, f"cliente_{idx}.png", escala_hd=1.65)
 
 
 def gerar_estacoes() -> None:
@@ -217,7 +221,7 @@ def gerar_estacoes() -> None:
     pygame.draw.rect(s, borda, (36, 30, 12, 11), 1)
     pygame.draw.circle(s, (242, 202, 68), (26, 17), 3)
     pygame.draw.circle(s, (82, 208, 124), (35, 17), 3)
-    _salvar_png(s, "estacao_cafe.png")
+    _salvar_png(s, "estacao_cafe.png", escala_hd=1.65)
 
     # 2. Estacao de Agua Gelada 2.5D
     s = _criar_surface(84, 92)
@@ -230,7 +234,7 @@ def gerar_estacoes() -> None:
     pygame.draw.rect(s, (150, 168, 188), (24, 54, 36, 14))
     pygame.draw.circle(s, (36, 112, 198), (34, 60), 4)
     pygame.draw.circle(s, (214, 68, 62), (50, 60), 4)
-    _salvar_png(s, "estacao_agua.png")
+    _salvar_png(s, "estacao_agua.png", escala_hd=1.65)
 
     # 3. Vitrine de Bolos 2.5D
     s = _criar_surface(84, 92)
@@ -244,7 +248,7 @@ def gerar_estacoes() -> None:
     pygame.draw.rect(s, (224, 104, 130), (22, 24, 40, 8))
     pygame.draw.circle(s, (206, 40, 58), (42, 21), 4)
     pygame.draw.rect(s, borda, (14, 14, 56, 36), 2)
-    _salvar_png(s, "estacao_bolo.png")
+    _salvar_png(s, "estacao_bolo.png", escala_hd=1.65)
 
     # 4. Estacao de Suco Natural 2.5D
     s = _criar_surface(84, 92)
@@ -258,7 +262,7 @@ def gerar_estacoes() -> None:
     # Laranjas no balcao
     pygame.draw.circle(s, (238, 126, 24), (20, 42), 7)
     pygame.draw.circle(s, borda, (20, 42), 7, 2)
-    _salvar_png(s, "estacao_suco.png")
+    _salvar_png(s, "estacao_suco.png", escala_hd=1.65)
 
     # 5. Caixa / Conta 2.5D
     s = _criar_surface(84, 92)
@@ -270,7 +274,7 @@ def gerar_estacoes() -> None:
     pygame.draw.rect(s, (104, 218, 134), (26, 28, 32, 12))
     pygame.draw.rect(s, borda, (20, 18, 44, 32), 2)
     pygame.draw.rect(s, (218, 174, 58), (30, 62, 24, 7))
-    _salvar_png(s, "estacao_caixa.png")
+    _salvar_png(s, "estacao_caixa.png", escala_hd=1.65)
 
     # 6. Totem / Placa de Banheiro 2.5D
     s = _criar_surface(84, 92)
@@ -286,7 +290,7 @@ def gerar_estacoes() -> None:
     pygame.draw.rect(s, (255, 255, 255), (25, 28, 8, 13))
     pygame.draw.circle(s, (255, 255, 255), (50, 23), 4)
     pygame.draw.polygon(s, (255, 255, 255), [(50, 28), (44, 41), (56, 41)])
-    _salvar_png(s, "estacao_banheiro.png")
+    _salvar_png(s, "estacao_banheiro.png", escala_hd=1.65)
 
     # 7. Mural de Libras 2.5D (Cavalete / Quadro de Madeira)
     s = _criar_surface(84, 92)
@@ -302,7 +306,7 @@ def gerar_estacoes() -> None:
     pygame.draw.rect(s, (118, 86, 176), (42, 40, 18, 16))
     pygame.draw.rect(s, (98, 64, 40), (20, 66, 8, 14))
     pygame.draw.rect(s, (98, 64, 40), (52, 66, 8, 14))
-    _salvar_png(s, "estacao_mural.png")
+    _salvar_png(s, "estacao_mural.png", escala_hd=1.65)
 
     # 8. Lixeira 2.5D
     s = _criar_surface(84, 92)
@@ -310,7 +314,7 @@ def gerar_estacoes() -> None:
     _bloco_25d(s, 22, 28, 40, 10, 42, (148, 156, 166), (104, 112, 124), borda)
     for lx in (32, 42, 52):
         pygame.draw.line(s, (166, 174, 184), (lx, 44), (lx, 74), 2)
-    _salvar_png(s, "estacao_lixeira.png")
+    _salvar_png(s, "estacao_lixeira.png", escala_hd=1.65)
 
 
 def gerar_itens() -> None:
@@ -323,14 +327,14 @@ def gerar_itens() -> None:
     pygame.draw.rect(s, (112, 62, 32), (8, 11, 12, 4))
     pygame.draw.rect(s, borda, (6, 10, 16, 15), 2)
     pygame.draw.rect(s, borda, (22, 13, 5, 9), 2)
-    _salvar_png(s, "item_cafe.png")
+    _salvar_png(s, "item_cafe.png", escala_hd=1.6)
 
     # Agua
     s = _criar_surface(32, 32)
     pygame.draw.rect(s, (112, 204, 248), (9, 7, 14, 19))
     pygame.draw.rect(s, (226, 248, 255), (12, 10, 4, 12))
     pygame.draw.rect(s, borda, (9, 7, 14, 19), 2)
-    _salvar_png(s, "item_agua.png")
+    _salvar_png(s, "item_agua.png", escala_hd=1.6)
 
     # Bolo
     s = _criar_surface(32, 32)
@@ -338,28 +342,28 @@ def gerar_itens() -> None:
     pygame.draw.rect(s, (224, 102, 130), (8, 10, 16, 5))
     pygame.draw.circle(s, (206, 40, 58), (16, 8), 3)
     pygame.draw.polygon(s, borda, [(5, 24), (27, 24), (23, 12), (9, 12)], 2)
-    _salvar_png(s, "item_bolo.png")
+    _salvar_png(s, "item_bolo.png", escala_hd=1.6)
 
     # Suco
     s = _criar_surface(32, 32)
     pygame.draw.rect(s, (244, 152, 32), (9, 9, 14, 17))
     pygame.draw.rect(s, borda, (9, 9, 14, 17), 2)
     pygame.draw.line(s, (56, 162, 86), (18, 9), (23, 3), 3)
-    _salvar_png(s, "item_suco.png")
+    _salvar_png(s, "item_suco.png", escala_hd=1.6)
 
     # Conta / Maquininha
     s = _criar_surface(32, 32)
     pygame.draw.rect(s, (74, 84, 98), (8, 5, 16, 22))
     pygame.draw.rect(s, (108, 224, 140), (11, 8, 10, 7))
     pygame.draw.rect(s, borda, (8, 5, 16, 22), 2)
-    _salvar_png(s, "item_pagar.png")
+    _salvar_png(s, "item_pagar.png", escala_hd=1.6)
 
     # Banheiro / Placa
     s = _criar_surface(32, 32)
     pygame.draw.rect(s, (118, 86, 184), (5, 7, 22, 18))
     pygame.draw.rect(s, borda, (5, 7, 22, 18), 2)
     pygame.draw.polygon(s, (255, 255, 255), [(11, 16), (20, 11), (20, 21)])
-    _salvar_png(s, "item_banheiro.png")
+    _salvar_png(s, "item_banheiro.png", escala_hd=1.6)
 
 
 def _desenhar_seta_grande(
