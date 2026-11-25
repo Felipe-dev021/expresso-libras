@@ -131,28 +131,27 @@ class InterfaceHUD:
                 pygame.draw.line(surf, p["parede_azulejo"], (ax, ay), (ax, ay + 38), 2)
         pygame.draw.rect(surf, p["parede_sombra"], (0, HUD_ALTURA, LARGURA, 22))
 
-        # 2. Quadro-negro autoral "EXPRESSO LIBRAS" na parede central
-        quadro = pygame.Rect(780, HUD_ALTURA + 28, 360, 122)
+        # Quadro-negro central estilo Starbucks (entre os slots 2 e 3, sem sobreposicao)
+        quadro = pygame.Rect(810, HUD_ALTURA + 28, 300, 122)
         pygame.draw.rect(surf, p["sombra"], quadro.move(7, 7))
-        pygame.draw.rect(surf, (32, 42, 38) if not contraste else (0, 0, 0), quadro)
-        pygame.draw.rect(surf, p["rodape"] if not contraste else p["hud_borda"], quadro, 6)
-        f_q1 = pygame.font.SysFont("georgia", 28, bold=True)
-        f_q2 = pygame.font.SysFont("segoeui", 19, bold=True)
-        t_q1 = f_q1.render("EXPRESSO LIBRAS", True, p["amarelo"])
-        t_q2 = f_q2.render("CAFE INCLUSIVO", True, (240, 236, 226))
+        pygame.draw.rect(surf, (20, 42, 36) if not contraste else (0, 0, 0), quadro)
+        pygame.draw.rect(surf, p["dourado"] if not contraste else p["hud_borda"], quadro, 5)
+        f_q1 = pygame.font.SysFont("georgia", 24, bold=True)
+        f_q2 = pygame.font.SysFont("segoeui", 17, bold=True)
+        t_q1 = f_q1.render("EXPRESSO LIBRAS", True, p["dourado"])
+        t_q2 = f_q2.render("CAFE INCLUSIVO", True, (244, 242, 236))
         surf.blit(t_q1, t_q1.get_rect(center=(quadro.centerx, quadro.top + 44)))
         surf.blit(t_q2, t_q2.get_rect(center=(quadro.centerx, quadro.top + 84)))
 
-        # 3. Janelas amplas com moldura 2.5D e reflexo celeste
         for jx in (465, 1210):
             janela = pygame.Rect(jx, HUD_ALTURA + 28, 255, 118)
             pygame.draw.rect(surf, p["parede_sombra"], janela.move(6, 6))
-            cor_vidro = (30, 44, 66) if contraste else (186, 224, 240)
+            cor_vidro = (30, 44, 66) if contraste else (204, 228, 232)
             pygame.draw.rect(surf, cor_vidro, janela)
             if not contraste:
                 pygame.draw.polygon(
                     surf,
-                    (220, 244, 252),
+                    (234, 248, 248),
                     [
                         (janela.left + 22, janela.top + 6),
                         (janela.left + 84, janela.top + 6),
@@ -169,41 +168,38 @@ class InterfaceHUD:
                 surf, cor_mold, (janela.left, janela.centery), (janela.right, janela.centery), 5
             )
 
-        # 4. Prateleira 2.5D com potes de cafe a direita
         prat = pygame.Rect(1560, HUD_ALTURA + 98, 260, 16)
         pygame.draw.rect(surf, p["sombra"], prat.move(5, 6))
         pygame.draw.rect(surf, p["rodape"] if not contraste else p["hud_borda"], prat)
         for px, cor_pote in (
-            (1584, (168, 86, 52)),
-            (1646, (58, 146, 98)),
-            (1708, (214, 152, 54)),
-            (1770, (240, 232, 220)),
+            (1584, (0, 112, 74)),
+            (1646, (30, 57, 50)),
+            (1708, (203, 162, 88)),
+            (1770, (242, 238, 228)),
         ):
             pygame.draw.rect(surf, cor_pote, (px, HUD_ALTURA + 54, 38, 44))
             pygame.draw.rect(surf, p["sombra"], (px, HUD_ALTURA + 54, 38, 44), 3)
-            pygame.draw.rect(surf, p["rodape"], (px - 3, HUD_ALTURA + 46, 44, 9))
+            pygame.draw.rect(surf, (96, 64, 42), (px - 3, HUD_ALTURA + 46, 44, 9))
 
-        # 5. Porta de entrada a esquerda com tapete 2.5D
         porta = pygame.Rect(96, HUD_ALTURA + 22, 166, 200)
-        cor_porta = (36, 44, 58) if contraste else (136, 92, 60)
+        cor_porta = (36, 44, 58) if contraste else (96, 64, 42)
         cor_borda_p = p["hud_borda"] if contraste else p["rodape"]
         pygame.draw.rect(surf, cor_porta, porta)
         pygame.draw.rect(surf, cor_borda_p, porta, 6)
         pygame.draw.rect(
             surf,
-            (108, 184, 214) if not contraste else (48, 66, 92),
+            (196, 224, 228) if not contraste else (48, 66, 92),
             (118, HUD_ALTURA + 42, 122, 82),
         )
         placa = pygame.Rect(130, HUD_ALTURA + 70, 98, 30)
         pygame.draw.rect(surf, p["verde"], placa)
-        pygame.draw.rect(surf, p["sombra"], placa, 2)
+        pygame.draw.rect(surf, p["dourado"], placa, 2)
         f_mini = pygame.font.SysFont("segoeui", 17, bold=True)
         txt_ab = f_mini.render("ABERTO", True, (255, 255, 255))
         surf.blit(txt_ab, txt_ab.get_rect(center=placa.center))
 
-        # Tapete de entrada
-        pygame.draw.rect(surf, p["destaque"], (104, BALCAO_Y - 58, 150, 42))
-        pygame.draw.rect(surf, cor_borda_p, (104, BALCAO_Y - 58, 150, 42), 3)
+        pygame.draw.rect(surf, p["verde"], (104, BALCAO_Y - 58, 150, 42))
+        pygame.draw.rect(surf, p["dourado"], (104, BALCAO_Y - 58, 150, 42), 3)
 
         # 6. Piso de madeira 2.5D com tabuas alternadas
         piso_y = BALCAO_Y + BALCAO_ALTURA - 8
@@ -338,10 +334,10 @@ class InterfaceHUD:
 
         # Vidas (4 coracoes)
         lbl_vidas = self.f_hud.render("VIDAS:", True, p["texto_claro"])
-        tela.blit(lbl_vidas, (1120, 26))
+        tela.blit(lbl_vidas, (1010, 26))
         for i in range(VIDAS_INICIAIS):
-            cor = p["vermelho"] if i < vidas else (82, 70, 64)
-            cx = 1230 + i * 38
+            cor = p["vermelho"] if i < vidas else (70, 86, 80)
+            cx = 1116 + i * 36
             cy = 40
             pygame.draw.circle(tela, cor, (cx - 6, cy - 3), 8)
             pygame.draw.circle(tela, cor, (cx + 6, cy - 3), 8)
@@ -349,14 +345,23 @@ class InterfaceHUD:
                 tela, cor, [(cx - 14, cy), (cx + 14, cy), (cx, cy + 14)]
             )
 
-        # Botoes clicaveis no canto superior direito: Mural + Tela Cheia / Janela
         if limpar_botoes:
+            lbl_som = "SOM: OFF [M]" if mudo else "SOM: ON [M]"
+            self._desenhar_botao(
+                tela,
+                "alternar_som",
+                lbl_som,
+                pygame.Rect(LARGURA - 636, 17, 168, 48),
+                p["rodape"],
+                p["texto_claro"],
+                fonte=self.f_peq,
+            )
             self._desenhar_botao(
                 tela,
                 "abrir_mural",
                 "MURAL [TAB]",
-                pygame.Rect(LARGURA - 468, 17, 196, 48),
-                p["azul"],
+                pygame.Rect(LARGURA - 454, 17, 188, 48),
+                p["verde"],
                 (255, 255, 255),
                 fonte=self.f_peq,
             )
@@ -365,8 +370,8 @@ class InterfaceHUD:
                 tela,
                 "alternar_tela",
                 lbl_tela,
-                pygame.Rect(LARGURA - 256, 17, 230, 48),
-                p["destaque"],
+                pygame.Rect(LARGURA - 252, 17, 226, 48),
+                p["dourado"],
                 p["texto_escuro"],
                 fonte=self.f_peq,
             )
@@ -452,7 +457,7 @@ class InterfaceHUD:
             "alternar_tela",
             lbl_tela,
             pygame.Rect(LARGURA // 2 + 10, 756, 260, 66),
-            p["destaque"],
+            p["dourado"],
             p["texto_escuro"],
             fonte=self.f_hud,
         )
@@ -606,11 +611,18 @@ class InterfaceHUD:
 
         cor_t = p["texto_claro"] if p["card_bg"][0] < 40 else p["texto_escuro"]
         tit = self.f_sub.render(
-            "MURAL DE REFERENCIA EM LIBRAS   •   [TAB] ou [ESC] para voltar",
-            True,
-            p["destaque"],
+            "MURAL DE REFERENCIA EM LIBRAS", True, p["destaque"]
         )
-        tela.blit(tit, tit.get_rect(center=(LARGURA // 2, 114)))
+        tela.blit(tit, (140, 96))
+        self._desenhar_botao(
+            tela,
+            "fechar_mural",
+            "FECHAR [TAB / ESC]",
+            pygame.Rect(LARGURA - 410, 86, 268, 52),
+            p["dourado"],
+            p["texto_escuro"],
+            fonte=self.f_peq,
+        )
 
         ordem = ["oi", "cafe", "agua", "bolo", "suco", "pagar", "banheiro", "obrigado"]
         colunas = 4
@@ -674,7 +686,7 @@ class InterfaceHUD:
             "alternar_tela",
             lbl_tela,
             pygame.Rect(LARGURA // 2 - 260, 474, 520, 74),
-            p["destaque"],
+            p["dourado"],
             p["texto_escuro"],
         )
         self._desenhar_botao(
