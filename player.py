@@ -43,8 +43,7 @@ class Atendente(pygame.sprite.Sprite):
         self.pos_y = float(self.rect.centery)
 
         self.item_na_mao: Optional[str] = None
-        self.direcao_olhar = (0, -1)
-        self.tempo_sinal_oi = 0.0  # animacao visual ao cumprimentar em Libras
+        self.tempo_sinal_oi = 0.0
         self.limites = pygame.Rect(*AREA_ATENDENTE)
 
     @property
@@ -97,9 +96,7 @@ class Atendente(pygame.sprite.Sprite):
             comprimento = math.hypot(dx, dy)
             nx = dx / comprimento
             ny = dy / comprimento
-            self.direcao_olhar = (dx, dy)
 
-            # Move eixo X e valida colisao
             antigo_x = self.pos_x
             self.pos_x += nx * velocidade * dt
             self.pos_x = max(
@@ -111,7 +108,6 @@ class Atendente(pygame.sprite.Sprite):
                     self.pos_x = antigo_x
                     break
 
-            # Move eixo Y e valida colisao
             antigo_y = self.pos_y
             self.pos_y += ny * velocidade * dt
             self.pos_y = max(
@@ -123,7 +119,6 @@ class Atendente(pygame.sprite.Sprite):
                     self.pos_y = antigo_y
                     break
 
-            # Anima passos
             self.tempo_passo += dt * (10.0 if correndo else 7.0)
             self.frame_atual = int(self.tempo_passo) % len(self.frames)
             self.image = self.frames[self.frame_atual]
@@ -137,13 +132,13 @@ class Atendente(pygame.sprite.Sprite):
         if self.item_na_mao and self.item_na_mao in self.icones_item:
             icone = self.icones_item[self.item_na_mao]
             caixa = pygame.Rect(self.rect.right - 22, self.rect.centery - 22, 56, 56)
-            pygame.draw.rect(tela, (28, 20, 15), caixa.move(4, 4))
-            pygame.draw.rect(tela, (250, 245, 235), caixa)
-            pygame.draw.rect(tela, (92, 62, 44), caixa, 3)
+            pygame.draw.rect(tela, (14, 26, 22), caixa.move(4, 4))
+            pygame.draw.rect(tela, (249, 247, 242), caixa)
+            pygame.draw.rect(tela, (0, 112, 74), caixa, 3)
             tela.blit(icone, icone.get_rect(center=caixa.center))
 
         if self.tempo_sinal_oi > 0:
             lado = int(72 + (0.65 - self.tempo_sinal_oi) * 72)
             quad = pygame.Rect(0, 0, lado, lado)
             quad.center = self.rect.center
-            pygame.draw.rect(tela, (48, 122, 184), quad, 4)
+            pygame.draw.rect(tela, (0, 112, 74), quad, 4)
