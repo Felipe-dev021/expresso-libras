@@ -127,15 +127,15 @@ class InterfaceHUD:
                 pygame.draw.line(surf, p["parede_azulejo"], (ax, ay), (ax, ay + 24), 1)
         pygame.draw.rect(surf, p["parede_sombra"], (0, HUD_ALTURA, LARGURA, 14))
 
-        # 2. Quadro-negro autoral "CAFE SINAL ABERTO" na parede central
-        quadro = pygame.Rect(428, HUD_ALTURA + 18, 174, 72)
+        # 2. Quadro-negro autoral "EXPRESSO LIBRAS" na parede central
+        quadro = pygame.Rect(422, HUD_ALTURA + 18, 186, 72)
         pygame.draw.rect(surf, p["sombra"], quadro.move(4, 4))
         pygame.draw.rect(surf, (32, 42, 38) if not contraste else (0, 0, 0), quadro)
         pygame.draw.rect(surf, p["rodape"] if not contraste else p["hud_borda"], quadro, 4)
         f_q1 = pygame.font.SysFont("georgia", 15, bold=True)
         f_q2 = pygame.font.SysFont("segoeui", 11, bold=True)
-        t_q1 = f_q1.render("SINAL ABERTO", True, p["amarelo"])
-        t_q2 = f_q2.render("CAFE & LIBRAS", True, (240, 236, 226))
+        t_q1 = f_q1.render("EXPRESSO LIBRAS", True, p["amarelo"])
+        t_q2 = f_q2.render("CAFE INCLUSIVO", True, (240, 236, 226))
         surf.blit(t_q1, t_q1.get_rect(center=(quadro.centerx, quadro.top + 26)))
         surf.blit(t_q2, t_q2.get_rect(center=(quadro.centerx, quadro.top + 48)))
 
@@ -267,8 +267,8 @@ class InterfaceHUD:
         # Rodape de controles rapidos
         f_bar = pygame.font.SysFont("segoeui", 12, bold=True)
         dica = (
-            "[WASD/Setas] Mover   [SHIFT] Correr   [E/ESPACO] Cumprimentar / Pegar / Entregar   "
-            "[TAB] Mural de Libras   [C] Contraste   [F] Fonte   [M] Som   [P] Pausa"
+            "[WASD/Setas] Mover  [SHIFT] Correr  [E/ESPACO] Interagir  "
+            "[TAB] Mural  [F11] Tela Cheia  [C] Contraste  [F] Fonte  [M] Som  [P] Pausa"
         )
         txt = f_bar.render(dica, True, p["texto_claro"])
         surf.blit(txt, txt.get_rect(center=(LARGURA // 2, ALTURA - 19)))
@@ -362,7 +362,7 @@ class InterfaceHUD:
 
         cor_t = p["texto_claro"] if p["card_bg"][0] < 40 else p["texto_escuro"]
         tag = self.f_peq.render("CAFE INCLUSIVO  •  SERIOUS GAME EM LIBRAS", True, p["destaque"])
-        titulo = self.f_titulo.render("SINAL ABERTO", True, cor_t)
+        titulo = self.f_titulo.render("EXPRESSO LIBRAS", True, cor_t)
         tela.blit(tag, tag.get_rect(center=(LARGURA // 2, 102)))
         tela.blit(titulo, titulo.get_rect(center=(LARGURA // 2, 144)))
 
@@ -414,7 +414,7 @@ class InterfaceHUD:
             (255, 255, 255),
         )
         rodape = self.f_peq.render(
-            "[C] Alto Contraste   |   [F] Fonte Grande   |   [M] Som   |   [ESC] Sair",
+            "[F11] Tela Cheia   |   [C] Alto Contraste   |   [F] Fonte Grande   |   [M] Som   |   [ESC] Sair",
             True,
             cor_t,
         )
@@ -667,7 +667,7 @@ class InterfaceHUD:
             sub_str = "Sem problemas! Revise o Mural de Libras e tente novamente."
         elif tipo == "vitoria_final":
             titulo_str = "ATENDIMENTO DOMINADO!"
-            sub_str = "Voce concluiu todas as 4 fases do Cafe Sinal Aberto!"
+            sub_str = "Voce concluiu todas as 4 fases do Expresso Libras!"
         else:
             titulo_str = f"FASE {fase.numero_fase} CONCLUIDA!"
             sub_str = f"Excelente acolhimento em '{fase.config_atual['titulo']}'!"

@@ -1,4 +1,4 @@
-# Sinal Aberto — Atendimento Inclusivo em Libras
+# Expresso Libras — Atendimento Inclusivo em Libras
 
 Jogo 2D educacional (*serious game*) desenvolvido em **Python + Pygame** para a disciplina de **Desenvolvimento de Jogos Digitais** (Engenharia de Software — 7º período, Univassouras Campus Maricá).
 
@@ -43,6 +43,7 @@ python main.py
 | `SHIFT` | Correr para atender mais rápido |
 | `E` ou `ESPAÇO` | Cumprimentar cliente em Libras / Pegar item na estação / Entregar pedido |
 | `TAB` | Abrir ou fechar o Mural de Referência em Libras |
+| `F11` ou `ALT + ENTER` | Alternar **Tela Cheia / Modo Janela** |
 | `C` | Alternar **Modo Alto Contraste** |
 | `F` | Alternar **Fonte Grande** |
 | `M` | Ligar / silenciar áudio (jogo 100% jogável sem som) |
