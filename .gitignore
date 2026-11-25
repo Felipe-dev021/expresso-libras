@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec
+progresso_sinal_aberto.json
+.DS_Store
+Thumbs.db
