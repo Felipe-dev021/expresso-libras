@@ -1,13 +1,12 @@
-"""Configuracoes centralizadas do jogo Sinal Aberto.
+"""Configuracoes centralizadas do jogo Expresso Libras.
 
-Reune dimensoes de tela, constantes de jogabilidade, paleta autoral
-(padrao artesanal e alto contraste), catalogo educativo de sinais em
-Libras e parametros das quatro fases progressivas.
+Reune resolucao Full HD, parametros de jogabilidade, paleta inspirada em
+cafeterias modernas (verde floresta, creme e madeira nogueira), catalogo
+educativo de Libras e configuracao das quatro fases progressivas.
 """
 
 import os
 
-# --- Janela e desempenho (Full HD 16:9 nativo) ---
 TITULO_JOGO = "Expresso Libras — Cafe Inclusivo"
 LARGURA = 1920
 ALTURA = 1080
@@ -15,7 +14,6 @@ JANELA_LARGURA = 1280
 JANELA_ALTURA = 720
 FPS = 60
 
-# --- Caminhos de arquivos (compativel com PyInstaller) ---
 PASTA_DATA = os.path.abspath(os.path.join(os.path.dirname(__file__), "data"))
 ARQUIVO_SAVE = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "progresso_expresso_libras.json")
@@ -27,63 +25,59 @@ def caminho_arquivo(nome_arquivo: str) -> str:
     return os.path.join(PASTA_DATA, nome_arquivo)
 
 
-# --- Layout 2.5D do cenario (Cafeteria Expresso Libras - 1920x1080) ---
 HUD_ALTURA = 86
-AREA_ATENDENTE = (116, 420, 1688, 594)  # (x, y, largura, altura)
+AREA_ATENDENTE = (116, 420, 1688, 594)
 BALCAO_Y = 382
 BALCAO_ALTURA = 82
 
-# Posicoes das 4 cadeiras/pontos de atendimento no balcao (x, y)
 PONTOS_BALCAO = [
-    (430, 328),
-    (790, 328),
-    (1150, 328),
-    (1510, 328),
+    (380, 328),
+    (730, 328),
+    (1190, 328),
+    (1540, 328),
 ]
 
-# --- Fisica e movimentacao do jogador ---
 VELOCIDADE_JOGADOR = 530.0
 VELOCIDADE_CORRIDA = 740.0
 RAIO_INTERACAO = 165.0
 
-# --- Regras de pontuacao, vidas e acessibilidade educativa ---
 VIDAS_INICIAIS = 4
 PONTOS_ACERTO_BASE = 100
 BONUS_SEM_MURAL = 50
 BONUS_RAPIDEZ_MAX = 40
 BONUS_COMBO = 25
-PENALIDADE_ERRO_PACIENCIA = 0.12  # erro suave para incentivar aprendizado
-LIMIAR_DICA_AUTOMATICA = 0.35     # mostra legenda educativa se paciencia < 35%
+PENALIDADE_ERRO_PACIENCIA = 0.12
+LIMIAR_DICA_AUTOMATICA = 0.35
 
-# --- Paleta autoral (Cafeteria artesanal brasileira / editorial) ---
+# Paleta Starbucks (verde floresta #1E3932, verde icone #00704A, creme e nogueira)
 PALETA_PADRAO = {
-    "fundo": (32, 24, 20),
-    "parede": (244, 235, 220),
-    "parede_azulejo": (232, 221, 202),
-    "parede_sombra": (214, 198, 174),
-    "rodape": (92, 62, 44),
-    "piso_claro": (208, 170, 130),
-    "piso_escuro": (192, 152, 112),
-    "piso_linha": (164, 126, 88),
-    "balcao_topo": (248, 243, 235),
-    "balcao_frente": (118, 76, 48),
-    "balcao_detalhe": (86, 52, 32),
-    "hud_bg": (34, 25, 21),
-    "hud_borda": (214, 146, 72),
-    "texto_claro": (250, 244, 234),
-    "texto_escuro": (36, 26, 20),
-    "destaque": (214, 124, 48),
-    "verde": (46, 142, 92),
-    "verde_claro": (152, 222, 176),
-    "amarelo": (232, 180, 48),
-    "vermelho": (196, 68, 58),
-    "azul": (48, 122, 184),
-    "card_bg": (250, 245, 235),
-    "card_borda": (74, 52, 38),
-    "sombra": (20, 14, 11),
+    "fundo": (22, 42, 36),
+    "parede": (245, 242, 235),
+    "parede_azulejo": (228, 224, 214),
+    "parede_sombra": (206, 202, 192),
+    "rodape": (30, 57, 50),
+    "piso_claro": (204, 172, 134),
+    "piso_escuro": (188, 154, 116),
+    "piso_linha": (156, 124, 88),
+    "balcao_topo": (248, 247, 243),
+    "balcao_frente": (30, 57, 50),
+    "balcao_detalhe": (18, 38, 32),
+    "hud_bg": (22, 44, 38),
+    "hud_borda": (203, 162, 88),
+    "texto_claro": (248, 246, 240),
+    "texto_escuro": (26, 42, 36),
+    "destaque": (0, 112, 74),
+    "dourado": (203, 162, 88),
+    "verde": (0, 112, 74),
+    "verde_claro": (132, 212, 174),
+    "amarelo": (228, 184, 72),
+    "vermelho": (194, 66, 62),
+    "azul": (38, 114, 152),
+    "card_bg": (249, 247, 242),
+    "card_borda": (30, 57, 50),
+    "sombra": (14, 26, 22),
 }
 
-# --- Paleta Alto Contraste (Acessibilidade visual AAA) ---
 PALETA_ALTO_CONTRASTE = {
     "fundo": (0, 0, 0),
     "parede": (18, 18, 24),
@@ -94,13 +88,14 @@ PALETA_ALTO_CONTRASTE = {
     "piso_escuro": (22, 22, 30),
     "piso_linha": (68, 68, 84),
     "balcao_topo": (245, 245, 245),
-    "balcao_frente": (42, 42, 54),
+    "balcao_frente": (32, 38, 44),
     "balcao_detalhe": (255, 220, 0),
     "hud_bg": (0, 0, 0),
     "hud_borda": (255, 220, 0),
     "texto_claro": (255, 255, 255),
     "texto_escuro": (0, 0, 0),
     "destaque": (255, 210, 0),
+    "dourado": (255, 220, 0),
     "verde": (0, 220, 110),
     "verde_claro": (160, 255, 200),
     "amarelo": (255, 225, 0),
@@ -111,78 +106,67 @@ PALETA_ALTO_CONTRASTE = {
     "sombra": (0, 0, 0),
 }
 
-# --- Catalogo educativo de sinais em Libras ---
 SINAIS_LIBRAS = {
     "oi": {
         "nome": "OI / OLA",
         "categoria": "Cumprimento",
         "estacao": "cumprimento",
-        "descricao": "Mao aberta acenando de um lado para o outro na altura do rosto.",
         "dica_curta": "Aceno aberto ao lado do rosto",
-        "cor": (48, 122, 184),
+        "cor": (0, 112, 74),
     },
     "cafe": {
         "nome": "CAFE",
         "categoria": "Bebida",
         "estacao": "cafe",
-        "descricao": "Mao em formato de 'C' levando uma xicara imaginaria ate a boca.",
         "dica_curta": "Mao em 'C' indo ate a boca",
-        "cor": (142, 78, 42),
+        "cor": (108, 68, 42),
     },
     "agua": {
         "nome": "AGUA",
         "categoria": "Bebida",
         "estacao": "agua",
-        "descricao": "Mao em 'L' (polegar e indicador) tocando o queixo duas vezes.",
         "dica_curta": "Mao em 'L' tocando o queixo",
-        "cor": (36, 146, 198),
+        "cor": (32, 134, 174),
     },
     "bolo": {
         "nome": "BOLO",
         "categoria": "Comida",
         "estacao": "bolo",
-        "descricao": "Mao aberta de lado fazendo movimento de cortar uma fatia.",
         "dica_curta": "Mao cortando fatia na palma",
-        "cor": (196, 94, 118),
+        "cor": (182, 86, 108),
     },
     "suco": {
         "nome": "SUCO",
         "categoria": "Bebida",
         "estacao": "suco",
-        "descricao": "Mao fechando e abrindo como quem espreme uma laranja no copo.",
         "dica_curta": "Mao espremendo fruta p/ baixo",
-        "cor": (222, 138, 28),
+        "cor": (208, 134, 34),
     },
     "obrigado": {
         "nome": "OBRIGADO(A)",
         "categoria": "Cortesia",
         "estacao": "cortesia",
-        "descricao": "Dedos unidos tocam a testa e descem para frente em agradecimento.",
         "dica_curta": "Mao na testa saindo p/ frente",
-        "cor": (46, 142, 92),
+        "cor": (0, 112, 74),
     },
     "pagar": {
         "nome": "CONTA / PAGAR",
         "categoria": "Servico",
         "estacao": "caixa",
-        "descricao": "Uma mao desliza para frente sobre a palma aberta da outra mao.",
         "dica_curta": "Deslizar mao sobre a palma",
-        "cor": (108, 142, 54),
+        "cor": (30, 57, 50),
     },
     "banheiro": {
         "nome": "BANHEIRO",
         "categoria": "Informacao",
         "estacao": "banheiro",
-        "descricao": "Mao fechada com o polegar entre os dedos (letra T) balancando.",
         "dica_curta": "Mao em 'T' balancando o pulso",
-        "cor": (118, 86, 176),
+        "cor": (96, 82, 148),
     },
 }
 
-# Sinais que representam pedidos/acoes fisicas em estacoes
 SINAIS_ESTACAO = ["cafe", "agua", "bolo", "suco", "pagar", "banheiro"]
 
-# --- Definicao das 4 fases progressivas (Mais acessivel e educativo) ---
 FASES_CONFIG = [
     {
         "numero": 1,

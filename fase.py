@@ -60,14 +60,11 @@ class GerenciadorFases:
     def _montar_estacoes(self) -> None:
         """Posiciona as 8 estacoes fisicas no salao Full HD (1920x1080)."""
         definicoes = [
-            # Lateral esquerda: Bebidas quentes e frias
             ("cafe", "CAFE", 248, 560, "cafe"),
             ("agua", "AGUA", 248, 790, "agua"),
-            # Parede inferior: Comida, Suco e Descarte
             ("bolo", "BOLO", 630, 865, "bolo"),
             ("suco", "SUCO", 960, 865, "suco"),
             ("lixeira", "DESCARTAR", 1290, 865, None),
-            # Lateral direita: Servicos, Informacao e Mural
             ("caixa", "CONTA", 1665, 545, "pagar"),
             ("banheiro", "BANHEIRO", 1665, 735, "banheiro"),
             ("mural", "MURAL [TAB]", 1665, 910, None),

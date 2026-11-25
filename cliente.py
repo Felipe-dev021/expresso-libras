@@ -41,7 +41,6 @@ class Cliente(pygame.sprite.Sprite):
 
         self.slot_index = slot_index
         self.destino_x, self.destino_y = destino_balcao
-        # Nasce entrando pela porta superior esquerda
         self.pos_x = 176.0
         self.pos_y = float(destino_balcao[1] - 58)
         self.rect = self.image.get_rect(center=(round(self.pos_x), round(self.pos_y)))
@@ -56,7 +55,6 @@ class Cliente(pygame.sprite.Sprite):
         self.tempo_espera_sinal = 0.0
         self.consultou_mural_neste = False
 
-        # Estados: "entrando", "esperando", "feliz", "triste"
         self.estado = "entrando"
         self.tempo_saida = 0.0
         self.tempo_erro_visual = 0.0

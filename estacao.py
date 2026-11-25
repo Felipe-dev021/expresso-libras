@@ -1,4 +1,4 @@
-"""Estacoes fisicas interativas da cafeteria Sinal Aberto.
+"""Estacoes fisicas interativas da cafeteria Expresso Libras.
 
 Cada estacao fornece um item ou servico correspondente a um sinal em Libras,
 alem do Mural de Referencia e da Lixeira para descartar itens errados.
