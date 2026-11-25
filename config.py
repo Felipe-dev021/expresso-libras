@@ -8,7 +8,7 @@ Libras e parametros das quatro fases progressivas.
 import os
 
 # --- Janela e desempenho ---
-TITULO_JOGO = "Sinal Aberto — Cafe Inclusivo em Libras"
+TITULO_JOGO = "Expresso Libras — Cafe Inclusivo"
 LARGURA = 1024
 ALTURA = 640
 FPS = 60
@@ -16,7 +16,7 @@ FPS = 60
 # --- Caminhos de arquivos (compativel com PyInstaller) ---
 PASTA_DATA = os.path.abspath(os.path.join(os.path.dirname(__file__), "data"))
 ARQUIVO_SAVE = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "progresso_sinal_aberto.json")
+    os.path.join(os.path.dirname(__file__), "progresso_expresso_libras.json")
 )
 
 
