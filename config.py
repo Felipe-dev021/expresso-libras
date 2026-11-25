@@ -7,10 +7,12 @@ Libras e parametros das quatro fases progressivas.
 
 import os
 
-# --- Janela e desempenho ---
+# --- Janela e desempenho (Full HD 16:9 nativo) ---
 TITULO_JOGO = "Expresso Libras — Cafe Inclusivo"
-LARGURA = 1024
-ALTURA = 640
+LARGURA = 1920
+ALTURA = 1080
+JANELA_LARGURA = 1280
+JANELA_ALTURA = 720
 FPS = 60
 
 # --- Caminhos de arquivos (compativel com PyInstaller) ---
@@ -25,24 +27,24 @@ def caminho_arquivo(nome_arquivo: str) -> str:
     return os.path.join(PASTA_DATA, nome_arquivo)
 
 
-# --- Layout 2.5D do cenario (Cafeteria Sinal Aberto) ---
-HUD_ALTURA = 56
-AREA_ATENDENTE = (68, 252, 888, 326)  # (x, y, largura, altura)
-BALCAO_Y = 230
-BALCAO_ALTURA = 50
+# --- Layout 2.5D do cenario (Cafeteria Expresso Libras - 1920x1080) ---
+HUD_ALTURA = 86
+AREA_ATENDENTE = (116, 420, 1688, 594)  # (x, y, largura, altura)
+BALCAO_Y = 382
+BALCAO_ALTURA = 82
 
 # Posicoes das 4 cadeiras/pontos de atendimento no balcao (x, y)
 PONTOS_BALCAO = [
-    (225, 198),
-    (415, 198),
-    (605, 198),
-    (795, 198),
+    (430, 328),
+    (790, 328),
+    (1150, 328),
+    (1510, 328),
 ]
 
 # --- Fisica e movimentacao do jogador ---
-VELOCIDADE_JOGADOR = 305.0
-VELOCIDADE_CORRIDA = 420.0
-RAIO_INTERACAO = 96.0
+VELOCIDADE_JOGADOR = 530.0
+VELOCIDADE_CORRIDA = 740.0
+RAIO_INTERACAO = 165.0
 
 # --- Regras de pontuacao, vidas e acessibilidade educativa ---
 VIDAS_INICIAIS = 4

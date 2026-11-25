@@ -42,8 +42,8 @@ class Cliente(pygame.sprite.Sprite):
         self.slot_index = slot_index
         self.destino_x, self.destino_y = destino_balcao
         # Nasce entrando pela porta superior esquerda
-        self.pos_x = 96.0
-        self.pos_y = float(destino_balcao[1] - 42)
+        self.pos_x = 176.0
+        self.pos_y = float(destino_balcao[1] - 58)
         self.rect = self.image.get_rect(center=(round(self.pos_x), round(self.pos_y)))
 
         self.pedidos = list(pedidos)
@@ -132,7 +132,7 @@ class Cliente(pygame.sprite.Sprite):
             self.tempo_erro_visual = max(0.0, self.tempo_erro_visual - dt)
 
         if self.estado == "entrando":
-            vel = 220.0
+            vel = 390.0
             dx = self.destino_x - self.pos_x
             dy = self.destino_y - self.pos_y
             dist = (dx * dx + dy * dy) ** 0.5
@@ -176,14 +176,14 @@ class Cliente(pygame.sprite.Sprite):
 
         # Halo quadrado de destaque quando o jogador esta em frente ao cliente
         if self.destacado and self.estado == "esperando":
-            base = pygame.Rect(self.rect.centerx - 28, self.rect.bottom - 14, 56, 18)
-            pygame.draw.rect(tela, paleta["destaque"], base, width=3)
+            base = pygame.Rect(self.rect.centerx - 46, self.rect.bottom - 22, 92, 28)
+            pygame.draw.rect(tela, paleta["destaque"], base, width=4)
 
         sinal_id = self.sinal_atual
         if not sinal_id:
             return
 
-        tremor = 4 if (self.tempo_erro_visual > 0 and int(self.tempo_erro_visual * 30) % 2 == 0) else 0
+        tremor = 6 if (self.tempo_erro_visual > 0 and int(self.tempo_erro_visual * 30) % 2 == 0) else 0
         dica_urgente = (
             self.estado == "esperando"
             and self.percentual_paciencia <= LIMIAR_DICA_AUTOMATICA
@@ -194,10 +194,10 @@ class Cliente(pygame.sprite.Sprite):
             or self.estado == "feliz"
             or sinal_id == "oi"
         )
-        largura_balao = 104
-        altura_balao = 86 if tem_legenda else 72
+        largura_balao = 176
+        altura_balao = 148 if tem_legenda else 124
         bx = self.rect.centerx - largura_balao // 2 + tremor
-        by = max(HUD_ALTURA + 6, self.rect.top - altura_balao - 8)
+        by = max(HUD_ALTURA + 10, self.rect.top - altura_balao - 12)
 
         ret = pygame.Rect(bx, by, largura_balao, altura_balao)
         cor_borda = paleta["vermelho"] if self.tempo_erro_visual > 0 else (
@@ -207,20 +207,20 @@ class Cliente(pygame.sprite.Sprite):
             cor_borda = paleta["destaque"]
 
         # Balao quadrado autoral com sombra projetada solida
-        pygame.draw.rect(tela, paleta["sombra"], ret.move(4, 4))
+        pygame.draw.rect(tela, paleta["sombra"], ret.move(6, 6))
         pygame.draw.rect(tela, paleta["card_bg"], ret)
-        pygame.draw.rect(tela, cor_borda, ret, width=3)
+        pygame.draw.rect(tela, cor_borda, ret, width=4)
         ponta = [
-            (self.rect.centerx - 7, ret.bottom - 1),
-            (self.rect.centerx + 7, ret.bottom - 1),
-            (self.rect.centerx, ret.bottom + 8),
+            (self.rect.centerx - 12, ret.bottom - 1),
+            (self.rect.centerx + 12, ret.bottom - 1),
+            (self.rect.centerx, ret.bottom + 14),
         ]
         pygame.draw.polygon(tela, paleta["card_bg"], ponta)
-        pygame.draw.lines(tela, cor_borda, False, [ponta[0], ponta[2], ponta[1]], 2)
+        pygame.draw.lines(tela, cor_borda, False, [ponta[0], ponta[2], ponta[1]], 3)
 
-        # Ilustracao animada 128->58px do gesto em Libras
-        frame = libras.obter_frame(sinal_id, tamanho=58)
-        tela.blit(frame, frame.get_rect(center=(ret.centerx, ret.top + 33)))
+        # Ilustracao desenhada em alta nitidez (102x102)
+        frame = libras.obter_frame(sinal_id, tamanho=102)
+        tela.blit(frame, frame.get_rect(center=(ret.centerx, ret.top + 58)))
 
         # Indicador de pedido duplo (quadradinhos no topo direito)
         if self.estado == "esperando" and len(self.pedidos) > 1:
@@ -235,7 +235,7 @@ class Cliente(pygame.sprite.Sprite):
                     )
                 )
                 pygame.draw.rect(
-                    tela, cor_q, (ret.right - 16 - i * 11, ret.top + 6, 8, 8)
+                    tela, cor_q, (ret.right - 24 - i * 18, ret.top + 10, 12, 12)
                 )
 
         # Legenda educativa (clientes iniciais, pista de baixa paciencia ou agradecimento)
@@ -255,7 +255,7 @@ class Cliente(pygame.sprite.Sprite):
                 )
             )
             txt = fonte_peq.render(nome, True, cor_txt)
-            tela.blit(txt, txt.get_rect(center=(ret.centerx, ret.bottom - 11)))
+            tela.blit(txt, txt.get_rect(center=(ret.centerx, ret.bottom - 18)))
 
         # Barra de paciencia quadrada logo abaixo do cliente
         if self.estado == "esperando":
@@ -265,8 +265,8 @@ class Cliente(pygame.sprite.Sprite):
                 if pct > 0.5
                 else (paleta["amarelo"] if pct > 0.25 else paleta["vermelho"])
             )
-            barra_bg = pygame.Rect(self.rect.centerx - 32, self.rect.bottom + 2, 64, 8)
-            barra_fg = pygame.Rect(barra_bg.x + 1, barra_bg.y + 1, int(62 * pct), 6)
+            barra_bg = pygame.Rect(self.rect.centerx - 52, self.rect.bottom + 4, 104, 13)
+            barra_fg = pygame.Rect(barra_bg.x + 2, barra_bg.y + 2, int(100 * pct), 9)
             pygame.draw.rect(tela, (28, 20, 16), barra_bg)
             if barra_fg.width > 0:
                 pygame.draw.rect(tela, cor_barra, barra_fg)

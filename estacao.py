@@ -32,10 +32,10 @@ class Estacao(pygame.sprite.Sprite):
         ).convert_alpha()
         self.rect = self.image.get_rect(center=(x, y))
         self.colisor = pygame.Rect(
-            self.rect.left + 10,
-            self.rect.top + 38,
-            self.rect.width - 20,
-            self.rect.height - 46,
+            self.rect.left + 16,
+            self.rect.top + 60,
+            self.rect.width - 32,
+            self.rect.height - 72,
         )
         self.destacada = False
 
@@ -47,20 +47,20 @@ class Estacao(pygame.sprite.Sprite):
     ) -> None:
         """Desenha etiqueta quadrada editorial abaixo da estacao e halo quando proxima."""
         if self.destacada:
-            halo = self.rect.inflate(8, 8)
-            pygame.draw.rect(tela, paleta["destaque"], halo, width=3)
+            halo = self.rect.inflate(12, 12)
+            pygame.draw.rect(tela, paleta["destaque"], halo, width=4)
 
         txt = fonte.render(self.rotulo, True, paleta["texto_claro"])
         bg = pygame.Rect(
-            self.rect.centerx - txt.get_width() // 2 - 8,
-            self.rect.bottom - 6,
-            txt.get_width() + 16,
-            txt.get_height() + 6,
+            self.rect.centerx - txt.get_width() // 2 - 12,
+            self.rect.bottom - 8,
+            txt.get_width() + 24,
+            txt.get_height() + 8,
         )
         cor_bg = paleta["destaque"] if self.destacada else paleta["hud_bg"]
         cor_txt = paleta["texto_escuro"] if self.destacada else paleta["texto_claro"]
-        pygame.draw.rect(tela, paleta["sombra"], bg.move(2, 2))
+        pygame.draw.rect(tela, paleta["sombra"], bg.move(3, 3))
         pygame.draw.rect(tela, cor_bg, bg)
-        pygame.draw.rect(tela, paleta["hud_borda"], bg, width=1)
+        pygame.draw.rect(tela, paleta["hud_borda"], bg, width=2)
         txt_final = fonte.render(self.rotulo, True, cor_txt)
-        tela.blit(txt_final, (bg.x + 8, bg.y + 3))
+        tela.blit(txt_final, (bg.x + 12, bg.y + 4))
