@@ -59,7 +59,8 @@ class JogoSinalAberto:
         except pygame.error:
             self.audio_disponivel = False
 
-        self.tela = pygame.display.set_mode((LARGURA, ALTURA))
+        self.tela_cheia = False
+        self.tela = pygame.display.set_mode((LARGURA, ALTURA), pygame.SCALED)
         pygame.display.set_caption(TITULO_JOGO)
         self.relogio = pygame.time.Clock()
 
@@ -119,6 +120,12 @@ class JogoSinalAberto:
         """Mostra uma mensagem curta de retorno na barra superior do HUD."""
         self.mensagem_barra = texto
         self.tempo_mensagem = duracao
+
+    def _alternar_tela_cheia(self) -> None:
+        """Alterna entre modo janela e tela cheia mantendo proporcao 1024x640."""
+        self.tela_cheia = not self.tela_cheia
+        flags = pygame.SCALED | (pygame.FULLSCREEN if self.tela_cheia else 0)
+        self.tela = pygame.display.set_mode((LARGURA, ALTURA), flags)
 
     def _alternar_mudo(self) -> None:
         """Liga ou desliga sons e musica salvando a preferencia do jogador."""
@@ -347,7 +354,12 @@ class JogoSinalAberto:
 
             tecla = evento.key
 
-            # Atalhos globais de acessibilidade funcionam em qualquer tela
+            # Atalhos globais (tela cheia e acessibilidade) funcionam em qualquer tela
+            if tecla == pygame.K_F11 or (
+                tecla == pygame.K_RETURN and (evento.mod & pygame.KMOD_ALT)
+            ):
+                self._alternar_tela_cheia()
+                continue
             if tecla == pygame.K_c:
                 self.hud.alternar_contraste()
                 self.save.salvar_preferencias(
