@@ -1,4 +1,4 @@
-"""Gerenciador de persistencia em JSON para o jogo Sinal Aberto.
+"""Gerenciador de persistencia em JSON para o jogo Expresso Libras.
 
 Salva recordes por fase, estatisticas de aprendizado de sinais em Libras
 e preferencias de acessibilidade com fallback seguro contra corrupcao.

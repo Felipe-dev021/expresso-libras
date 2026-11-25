@@ -48,7 +48,7 @@ def _garantir_assets() -> None:
         gerar_todos_assets()
 
 
-class JogoSinalAberto:
+class JogoExpressoLibras:
     """Controlador principal do jogo 2.5D de atendimento inclusivo em Libras."""
 
     def __init__(self) -> None:
@@ -366,10 +366,14 @@ class JogoSinalAberto:
                     self._preparar_fase(self.fases.indice_fase + 1)
                 elif chave == "alternar_tela":
                     self._alternar_tela_cheia()
+                elif chave == "alternar_som":
+                    self._alternar_mudo()
                 elif chave == "abrir_mural" and self.estado == "jogando":
                     self.fases.registrar_consulta_mural()
                     self.estado = "mural"
                     self._tocar("pegar")
+                elif chave == "fechar_mural" and self.estado == "mural":
+                    self.estado = "jogando"
                 break
 
     def _processar_eventos(self) -> None:
@@ -589,4 +593,4 @@ class JogoSinalAberto:
 
 
 if __name__ == "__main__":
-    JogoSinalAberto().executar()
+    JogoExpressoLibras().executar()
