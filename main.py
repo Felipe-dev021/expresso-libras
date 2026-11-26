@@ -40,9 +40,9 @@ from save_manager import GerenciadorSave
 
 
 def _garantir_assets() -> None:
-    """Gera automaticamente os sprites e audios se a pasta data/ estiver ausente."""
-    arquivo_teste = os.path.join(PASTA_DATA, "atendente_0.png")
-    if not os.path.exists(arquivo_teste):
+    """Gera automaticamente os sprites, fallback de Libras e audios se faltarem."""
+    obrigatorios = ["atendente_0.png"] + [f"sinal_{sid}.png" for sid in SINAIS_LIBRAS]
+    if any(not os.path.exists(os.path.join(PASTA_DATA, arq)) for arq in obrigatorios):
         from gerar_assets import gerar_todos_assets
 
         gerar_todos_assets()
@@ -87,6 +87,7 @@ class JogoExpressoLibras:
 
         self.estado = "menu"
         self.score = 0
+        self.score_inicio_fase = 0
         self.vidas = VIDAS_INICIAIS
         self.mensagem_barra = ""
         self.tempo_mensagem = 0.0
@@ -169,11 +170,16 @@ class JogoExpressoLibras:
     def _iniciar_nova_partida(self) -> None:
         """Comeca um novo jogo a partir da fase 1."""
         self.score = 0
+        self.score_inicio_fase = 0
         self.vidas = VIDAS_INICIAIS
         self._preparar_fase(0)
 
-    def _preparar_fase(self, indice: int) -> None:
-        """Configura o estado para o briefing de uma fase especifica."""
+    def _preparar_fase(self, indice: int, reiniciar: bool = False) -> None:
+        """Configura o estado para o briefing ou reinicio de uma fase."""
+        if reiniciar:
+            self.score = self.score_inicio_fase
+        else:
+            self.score_inicio_fase = self.score
         self.vidas = VIDAS_INICIAIS
         self.fases.iniciar_fase(indice)
         self.jogador.resetar(LARGURA // 2, 680)
@@ -360,7 +366,7 @@ class JogoExpressoLibras:
                 elif chave == "continuar":
                     self.estado = "jogando"
                 elif chave == "reiniciar_fase":
-                    self._preparar_fase(self.fases.indice_fase)
+                    self._preparar_fase(self.fases.indice_fase, reiniciar=True)
                     self.estado = "jogando"
                 elif chave == "proxima_fase":
                     self._preparar_fase(self.fases.indice_fase + 1)
@@ -455,7 +461,7 @@ class JogoExpressoLibras:
                 if tecla in (pygame.K_p, pygame.K_ESCAPE):
                     self.estado = "jogando"
                 elif tecla == pygame.K_r:
-                    self._preparar_fase(self.fases.indice_fase)
+                    self._preparar_fase(self.fases.indice_fase, reiniciar=True)
                     self.estado = "jogando"
 
             elif self.estado == "vitoria_fase":
@@ -466,7 +472,7 @@ class JogoExpressoLibras:
 
             elif self.estado == "derrota":
                 if tecla in (pygame.K_r, pygame.K_RETURN, pygame.K_SPACE):
-                    self._preparar_fase(self.fases.indice_fase)
+                    self._preparar_fase(self.fases.indice_fase, reiniciar=True)
                     self.estado = "jogando"
                 elif tecla == pygame.K_ESCAPE:
                     self.estado = "menu"
