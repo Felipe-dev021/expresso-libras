@@ -1,96 +1,162 @@
-# Expresso Libras — Atendimento Inclusivo em Libras
+# Expresso Libras — Café Inclusivo
 
-Jogo 2D educacional (*serious game*) desenvolvido em **Python + Pygame** para a disciplina de **Desenvolvimento de Jogos Digitais** (Engenharia de Software — 7º período, Univassouras Campus Maricá).
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)
+![Pygame-CE](https://img.shields.io/badge/Pygame--CE-2.5%2B-00704A?style=flat-square)
+![Resolução](https://img.shields.io/badge/Full%20HD-1920x1080-1E3932?style=flat-square)
+![Tema P2](https://img.shields.io/badge/Tema%2007-Acessibilidade%20e%20Inclus%C3%A3o-CBA258?style=flat-square)
 
-## Tema e Problema Real
+**Expresso Libras** é um *serious game* 2.5D desenvolvido em **Python + Pygame** para a avaliação **P2** da disciplina de **Desenvolvimento de Jogos Digitais** (Bacharelado em Engenharia de Software — 7º período, Univassouras Campus Maricá).
 
-- **Tema do Guarda-Chuva:** 07 — Acessibilidade e Inclusão.
-- **Problema:** Atendentes de comércios e serviços presenciais raramente reconhecem sinais básicos de Libras (cumprimentos, pedidos cotidianos e solicitações de informação), gerando barreiras de comunicação, constrangimento e exclusão de pessoas surdas.
-- **Como a mecânica resolve o problema:** O jogador assume o papel de um atendente em uma cafeteria 2.5D que acolhe clientes surdos cumprimentando em Libras, interpreta gestos animados (128x128) no balão visual e prepara/entrega o item ou serviço correto nas estações físicas do salão. Antes de cada fase, o **Briefing Educativo** ensina os sinais novos com animações e dicas; durante o jogo, o apoio de legendas desaparece progressivamente (com pista educativa automática em baixa paciência e feedback imediato em caso de erro), medindo o aprendizado pela taxa de **autonomia sem consulta ao Mural de Libras** e pelo **tempo médio de reconhecimento**.
+---
 
-## Requisitos e Instalação
+## 1. Problema Real e Objetivo de Impacto
 
-- **Python 3.10+** (testado em Python 3.14)
+- **Tema do Guarda-Chuva:** 07 — Acessibilidade e Inclusão (*"Barreiras que só enxerga quem as vive"*).
+- **Problema:** Atendentes ouvintes de cafeterias, comércios e serviços presenciais raramente reconhecem sinais básicos de **Libras** (Língua Brasileira de Sinais), gerando filas paradas, constrangimento e exclusão de clientes surdos no cotidiano.
+- **Solução pela Mecânica (não é quiz):** O jogador controla fisicamente um barista em uma cafeteria 2.5D, acolhendo clientes surdos com o cumprimento em Libras, interpretando gestos ilustrados sob pressão de tempo, preparando itens nas estações certas (inclusive a **Chave WC** para o banheiro e a **Conta** sempre após um pedido de consumo) e entregando antes que a paciência acabe.
+- **Como medimos que ajudou:** Ao fim de cada fase e na tela de finalização da campanha, o jogo apresenta métricas reais de aprendizado:
+  - **Autonomia plena (%):** clientes atendidos sem consultar o Mural de Libras, sem legenda inicial e sem precisar da dica automática de baixa paciência.
+  - **Tempo médio de reconhecimento:** em segundos por sinal.
+  - **Sinais para revisar:** ranking dos sinais com mais erros na fase.
+  - **Classificação final:** *Barista Fluente em Libras* ($\ge 75\%$), *Atendente Inclusivo* ($\ge 45\%$) ou *Aprendiz Dedicado* ($< 45\%$).
+
+---
+
+## 2. Principais Recursos
+
+- **Visual 2.5D em Full HD (`1920x1080`, 16:9):** cenário pré-renderizado em cache com estética de cafeteria contemporânea (verde floresta, creme, madeira nogueira e latão), feixes de luz solar, balcão ripado e ordenação de profundidade (Y-Sort).
+- **Tela Cheia Real + Modo Janela:** inicia em Tela Cheia mantendo nitidez 1080p e oferece botão clicável + atalho `[F11]` / `[ALT + ENTER]` para alternar com janela redimensionável (`1280x720`).
+- **Acessibilidade Nativa:** Modo **Alto Contraste** (`[C]`), **Fonte Grande** (`[F]`) com ajuste automático de texto nos botões, **Mudo** (`[M]`) e jogo 100% jogável sem depender de áudio (feedback visual completo).
+- **Aprendizado Progressivo (Scaffolding):** Briefing educativo antes de cada fase exibindo os sinais novos, Mural de Referência (`[TAB]`) consultável a qualquer momento, pista educativa automática abaixo de 35% de paciência e dica imediata ao errar.
+- **Persistência Segura:** recordes, estatísticas de sinais e preferências de acessibilidade salvos em JSON (`progresso_expresso_libras.json`) com gravação atômica e fallback seguro.
+
+---
+
+## 3. Progressão das 4 Fases (Canal de Fluxo)
+
+| Fase | Título | Meta | Sinais de Pedido | Legendas Iniciais | Paciência | Pedidos Duplos |
+| :---: | --- | :---: | --- | :---: | :---: | :---: |
+| **1** | Manhã Tranquila | 5 clientes | Café, Água | 3 clientes | 38s | 0% |
+| **2** | Hora do Lanche | 6 clientes | Café, Água, Bolo, Suco | 2 clientes | 34s | 10% |
+| **3** | Horário de Pico | 7 clientes | Todos os 6 sinais | 1 cliente | 30s | 25% |
+| **4** | Casa Cheia Inclusiva | 8 clientes | Todos os 6 sinais | 0 (memória pura) | 27s | 40% |
+
+> **Regra realista de atendimento:** clientes que solicitam **Conta / Pagar** sempre fazem primeiro um pedido de consumo (Café, Água, Bolo ou Suco) antes de pedir a conta. Ao concluir a Fase 4, o jogador acessa a **Tela de Finalização** com o resumo completo da campanha.
+
+---
+
+## 4. Vocabulário em Libras Trabalhado
+
+| Sinal | Categoria | Estação / Ação no Jogo | Dica de Execução |
+| --- | --- | --- | --- |
+| **OI / OLÁ** | Cumprimento | Acolher no balcão (`[E]`) | Aceno aberto ao lado do rosto |
+| **CAFÉ** | Bebida | Máquina de Café | Mão em "C" indo até a boca |
+| **ÁGUA** | Bebida | Estação de Água | Mão em "L" tocando o queixo |
+| **BOLO** | Comida | Vitrine de Bolos | Mão cortando fatia na palma |
+| **SUCO** | Bebida | Estação de Suco | Mão espremendo fruta para baixo |
+| **CONTA / PAGAR** | Serviço | Caixa (`CONTA`) | Deslizar mão sobre a palma |
+| **BANHEIRO** | Informação | Porta-chaves (`CHAVE WC`) | Mão em "T" balançando o pulso |
+| **OBRIGADO(A)** | Cortesia | Retorno de gratidão do cliente | Mão na testa saindo para frente |
+
+---
+
+## 5. Controles e Atalhos
+
+| Tecla / Controle | Ação |
+| --- | --- |
+| `W, A, S, D` ou `Setas` | Movimentar o atendente em 8 direções |
+| `SHIFT` | Correr para atender mais rápido |
+| `E` ou `ESPAÇO` | Cumprimentar cliente / Pegar item / Entregar pedido / Abrir Mural |
+| `TAB` ou botão `MURAL` | Abrir ou fechar o Mural de Referência em Libras |
+| `F11`, `ALT + ENTER` ou botão | Alternar **Tela Cheia / Modo Janela** |
+| `C` | Alternar **Modo Alto Contraste** |
+| `F` | Alternar **Fonte Grande** |
+| `M` ou botão `SOM` | Ligar / silenciar música e efeitos sonoros |
+| `P` ou `ESC` | Pausar / voltar ao menu |
+
+---
+
+## 6. Instalação e Execução
+
+### Pré-requisitos
+- **Python 3.10+**
 - **pygame-ce** (`>= 2.5.0`)
 
+### Passo a passo
+
 ```bash
-# 1. Criar e ativar o ambiente virtual
+# 1. Clonar o repositório
+git clone https://github.com/SEU_USUARIO/expresso-libras.git
+cd expresso-libras
+
+# 2. Criar e ativar o ambiente virtual
 python -m venv .venv
 
 # Windows (PowerShell)
 .venv\Scripts\Activate.ps1
 
-# Linux / Mac
+# Windows (Git Bash)
+source .venv/Scripts/activate
+
+# Linux / macOS
 source .venv/bin/activate
 
-# 2. Instalar dependencias
+# 3. Instalar dependências
 pip install -r requirements.txt
-
-# 3. (Opcional) Gerar os sprites e audios em data/ manualmente
-python gerar_assets.py
 
 # 4. Executar o jogo
 python main.py
 ```
 
-> **Observação:** Caso a pasta `data/` ainda não exista, `main.py` gera automaticamente todos os sprites PNG e efeitos sonoros WAV na primeira execução.
+> **Geração automática de assets:** se algum sprite, áudio WAV ou ilustração de fallback estiver ausente em `data/`, `main.py` regenera automaticamente na inicialização via `gerar_assets.py`.
 
-## Controles e Acessibilidade
+### Empacotamento opcional (PyInstaller — Windows)
 
-| Tecla | Ação |
-| --- | --- |
-| `W, A, S, D` ou `Setas` | Movimentar o atendente pelo salão |
-| `SHIFT` | Correr para atender mais rápido |
-| `E` ou `ESPAÇO` | Cumprimentar cliente em Libras / Pegar item na estação / Entregar pedido |
-| `TAB` | Abrir ou fechar o Mural de Referência em Libras |
-| `F11` ou `ALT + ENTER` | Alternar **Tela Cheia / Modo Janela** |
-| `C` | Alternar **Modo Alto Contraste** |
-| `F` | Alternar **Fonte Grande** |
-| `M` | Ligar / silenciar áudio (jogo 100% jogável sem som) |
-| `P` ou `ESC` | Pausar / voltar ao menu |
-
-## Sinais em Libras Trabalhados
-
-1. **OI / OLÁ** — Cumprimento inicial acolhedor no balcão.
-2. **CAFÉ** — Mão em "C" levando à boca (estação Máquina de Café).
-3. **ÁGUA** — Mão em "L" com polegar tocando o queixo (estação Água).
-4. **BOLO** — Formato cilíndrico + gesto de fatiar (estação Vitrine de Bolos).
-5. **SUCO** — Gesto de espremer fruta sobre a palma (estação Suco).
-6. **CONTA / PAGAR** — Deslizar a mão sobre a palma (estação Caixa).
-7. **BANHEIRO** — Mão fechada balançando no pulso (estação Placa Banheiro).
-8. **OBRIGADO(A)** — Mão na testa saindo para frente (feedback de gratidão do cliente).
-
-## Arquitetura do Projeto
-
-```text
-trabalho-jogos-alternativo/
-├── main.py            # Loop principal 60 FPS, maquina de estados e interacoes
-├── config.py          # Constantes, paletas, catalogo de sinais e regras das 4 fases
-├── save_manager.py    # Persistencia JSON de recordes, estatisticas e acessibilidade
-├── gerar_assets.py    # Gerador procedural de sprites PNG e audios WAV em data/
-├── libras.py          # Carregamento e animacao dos quadros de sinais em Libras
-├── player.py          # Classe Atendente com movimentacao normalizada e item na mao
-├── particulas.py      # Sistema de particulas, vapor e textos flutuantes
-├── estacao.py         # Estacoes interativas da cafeteria e destaque de proximidade
-├── cliente.py         # Clientes surdos com balao animado de Libras e paciencia
-├── fase.py            # Progressao das 4 fases, spawn por dt e metricas pedagogicas
-├── hud.py             # Cenario em cache, HUD, Mural de Libras e telas de estado
-├── requirements.txt   # Dependencias do projeto
-└── data/              # Sprites PNG e arquivos de audio WAV gerados
+```powershell
+pip install pyinstaller
+pyinstaller --onefile --windowed --name ExpressoLibras --add-data "data;data" main.py
 ```
 
-## Equipe e Créditos de Assets
+---
 
-- **Felipe-dev021** (`config.py`, `main.py`, `save_manager.py`) — Arquitetura core, game loop e persistência
-- **anacgsx** (`gerar_assets.py`, `libras.py`, `data/`) — Arte 2.5D, áudio WAV e curadoria das ilustrações de Libras
-- **lucas-marins-dev** (`player.py`, `particulas.py`) — Movimentação do atendente, feedback visual e acessibilidade
-- **GuiMell0** (`estacao.py`, `cliente.py`, `fase.py`) — Estações, comportamento de clientes e progressão das 4 fases
-- **Gabriel-dev10** (`hud.py`, `README.md`) — Cenário 2.5D, HUD, Mural de Libras, telas editoriais e documentação
+## 7. Arquitetura do Projeto
 
-### Origem dos Assets e Uso de IA (Transparência P2)
+```text
+expresso-libras/
+├── main.py            # Loop principal 60 FPS, tela cheia Full HD, máquina de estados e interações
+├── config.py          # Constantes, paletas (padrão e alto contraste), catálogo de Libras e 4 fases
+├── save_manager.py    # Persistência JSON atômica de recordes, estatísticas e acessibilidade
+├── gerar_assets.py    # Gerador procedural 2x supersampled de sprites 2.5D, áudios WAV e fallback
+├── libras.py          # Carregamento, cache suave e animação sutil das ilustrações de Libras
+├── player.py          # Classe Atendente com movimento normalizado por dt, hitbox 2.5D e bandeja
+├── particulas.py      # Partículas de feedback, vapor da máquina de café e textos flutuantes
+├── estacao.py         # Estações interativas da cafeteria e destaque visual de proximidade
+├── cliente.py         # Clientes surdos com balão de Libras, pista automática e barra de paciência
+├── fase.py            # Gerenciador das 4 fases, regras de pedido e métricas de autonomia
+├── hud.py             # Cenário 2.5D em cache, HUD, Briefing, Mural, Pausa e Tela de Finalização
+├── requirements.txt   # Dependências do projeto
+└── data/              # Sprites PNG 2.5D, 8 ilustrações de Libras (256x256) e 6 áudios WAV
+```
 
-| Asset | Origem | Observação |
+---
+
+## 8. Equipe e Origem dos Assets (Transparência P2)
+
+### Integrantes e Responsabilidades
+
+| Integrante | Módulos Principais | Responsabilidade |
 | --- | --- | --- |
-| Sprites 2.5D (atendente, clientes, estações, itens) | Gerados proceduralmente em Python (`gerar_assets.py`) | Autoral do grupo |
-| Trilha sonora e efeitos sonoros (`.wav`) | Síntese procedural em Python (`gerar_assets.py`) | Autoral do grupo |
-| Ilustrações dos sinais em Libras (`data/sinal_*.png`) | IA generativa (geração de imagens 2D) + composição editorial em Python | Declarado conforme diretrizes da P2 |
+| **Felipe-dev021** | `main.py`, `save_manager.py` | Arquitetura core, game loop 60 FPS, tela cheia Full HD e persistência JSON |
+| **anacgsx** | `gerar_assets.py`, `libras.py`, `data/` | Sprites 2.5D supersampled, síntese de áudio WAV e curadoria de Libras |
+| **lucas-marins-dev** | `player.py`, `particulas.py` | Movimentação 2.5D do atendente, bandeja e feedback visual inclusivo |
+| **GuiMell0** | `config.py`, `estacao.py`, `cliente.py`, `fase.py` | Estações, lógica de clientes/pedidos e progressão das 4 fases |
+| **Gabriel-dev10** | `hud.py`, `README.md` | Cenário 2.5D, HUD, Mural, acessibilidade visual, Tela de Finalização e documentação |
+
+### Origem dos Assets e Uso de IA
+
+| Recurso | Origem | Observação |
+| --- | --- | --- |
+| Sprites 2.5D (atendente, clientes, estações, itens) | Gerados proceduralmente via Python (`gerar_assets.py`) | Autoral do grupo, sem assets de terceiros |
+| Trilha sonora e efeitos sonoros (`.wav`) | Síntese procedural via Python (`gerar_assets.py`) | Autoral do grupo |
+| Ilustrações dos 8 sinais de Libras (`data/sinal_*.png`) | IA generativa de imagens 2D (estilo editorial uniforme) | Revisadas e integradas pelo grupo; declarado conforme diretrizes da P2 |
+| Apoio ao desenvolvimento e refatoração | Assistente de código com IA | Todo o código foi revisado, testado e compreendido pela equipe |
