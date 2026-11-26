@@ -54,6 +54,8 @@ class Cliente(pygame.sprite.Sprite):
         self.paciencia = paciencia_max
         self.tempo_espera_sinal = 0.0
         self.consultou_mural_neste = False
+        self.usou_apoio_visual = mostrar_legenda
+        self.ultimo_sinal_ativo: Optional[str] = None
 
         self.estado = "entrando"
         self.tempo_saida = 0.0
@@ -114,9 +116,8 @@ class Cliente(pygame.sprite.Sprite):
             self.paciencia = min(self.paciencia_max, self.paciencia + 5.0)
             return "etapa_ok", tempo, esperado
 
-        # Erro de interpretacao do sinal
         self.paciencia = max(
-            1.5, self.paciencia - self.paciencia_max * PENALIDADE_ERRO_PACIENCIA
+            0.0, self.paciencia - self.paciencia_max * PENALIDADE_ERRO_PACIENCIA
         )
         self.tempo_erro_visual = 0.55
         return "errado", 0.0, esperado
@@ -147,7 +148,10 @@ class Cliente(pygame.sprite.Sprite):
         if self.estado == "esperando":
             self.paciencia -= dt
             self.tempo_espera_sinal += dt
+            if not self.precisa_oi and self.percentual_paciencia <= LIMIAR_DICA_AUTOMATICA:
+                self.usou_apoio_visual = True
             if self.paciencia <= 0:
+                self.ultimo_sinal_ativo = self.sinal_atual
                 self.paciencia = 0.0
                 self.estado = "triste"
                 self.tempo_saida = 0.9

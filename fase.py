@@ -112,15 +112,17 @@ class GerenciadorFases:
         self.combo_atual = 0
 
     def concluir_cliente(self, cliente: Cliente) -> bool:
-        """Contabiliza atendimento concluido e informa se foi sem consulta ao mural."""
+        """Contabiliza atendimento concluido e informa se houve autonomia plena."""
         self.clientes_atendidos += 1
         self.combo_atual += 1
         if self.combo_atual > self.melhor_combo:
             self.melhor_combo = self.combo_atual
-        sem_mural = not cliente.consultou_mural_neste
-        if sem_mural:
+        sem_ajuda = (
+            not cliente.consultou_mural_neste and not cliente.usou_apoio_visual
+        )
+        if sem_ajuda:
             self.clientes_sem_mural += 1
-        return sem_mural
+        return sem_ajuda
 
     def fase_concluida(self) -> bool:
         """Verifica se a meta de clientes atendidos da fase foi atingida."""
@@ -201,8 +203,8 @@ class GerenciadorFases:
             if evento == "desistiu":
                 desistencias += 1
                 self.combo_atual = 0
-                if cliente.sinal_atual:
-                    self.registrar_erro(cliente.sinal_atual)
+                if cliente.ultimo_sinal_ativo:
+                    self.registrar_erro(cliente.ultimo_sinal_ativo)
             elif evento == "saiu":
                 if self.slots_ocupados.get(cliente.slot_index) is cliente:
                     self.slots_ocupados[cliente.slot_index] = None
