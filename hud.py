@@ -809,3 +809,111 @@ class InterfaceHUD:
             "Pressione [ESC] para voltar ao menu principal", True, cor_t
         )
         tela.blit(rod, rod.get_rect(center=(LARGURA // 2, 876)))
+
+    def desenhar_finalizacao(
+        self,
+        tela: pygame.Surface,
+        libras: BibliotecaLibras,
+        score: int,
+        melhor_score: int,
+        atendidos_total: int,
+        autonomos_total: int,
+        tempo_medio: float,
+    ) -> None:
+        """Renderiza a tela comemorativa de finalizacao ao concluir as 4 fases."""
+        self.botoes_clicaveis.clear()
+        p = self.paleta
+        overlay = pygame.Surface((LARGURA, ALTURA), pygame.SRCALPHA)
+        overlay.fill((12, 24, 20, 222))
+        tela.blit(overlay, (0, 0))
+
+        card = pygame.Rect(160, 64, LARGURA - 320, 948)
+        self._desenhar_painel_editorial(tela, card, p["dourado"], p["verde"], 22)
+
+        cor_t = p["texto_claro"] if p["card_bg"][0] < 40 else p["texto_escuro"]
+        tag = self.f_peq.render(
+            "FIM DA JORNADA  •  TODAS AS 4 FASES CONCLUIDAS", True, p["verde"]
+        )
+        titulo = self.f_titulo.render("PARABENS! JOGO FINALIZADO", True, p["verde"])
+        sub = self.f_sub.render(
+            "Voce concluiu o turno completo do Expresso Libras!", True, cor_t
+        )
+        tela.blit(tag, tag.get_rect(center=(LARGURA // 2, 134)))
+        tela.blit(titulo, titulo.get_rect(center=(LARGURA // 2, 194)))
+        tela.blit(sub, sub.get_rect(center=(LARGURA // 2, 250)))
+
+        pygame.draw.line(
+            tela, p["dourado"], (card.left + 120, 288), (card.right - 120, 288), 3
+        )
+
+        # Ilustracao de OBRIGADO(A) em Libras a esquerda + selo de classificacao a direita
+        box_img = pygame.Rect(card.left + 90, 322, 250, 280)
+        pygame.draw.rect(tela, p["sombra"], box_img.move(5, 5))
+        pygame.draw.rect(tela, p["parede"], box_img)
+        pygame.draw.rect(tela, p["verde"], (box_img.x, box_img.y, box_img.width, 44))
+        pygame.draw.rect(tela, p["verde"], box_img, 3)
+        lbl_obg = self.f_hud.render("OBRIGADO(A)!", True, (255, 255, 255))
+        tela.blit(lbl_obg, lbl_obg.get_rect(center=(box_img.centerx, box_img.y + 22)))
+        frame = libras.obter_frame("obrigado", tamanho=188)
+        tela.blit(frame, frame.get_rect(center=(box_img.centerx, box_img.y + 154)))
+        lbl_lib = self.f_peq.render("Em Libras", True, cor_t)
+        tela.blit(lbl_lib, lbl_lib.get_rect(center=(box_img.centerx, box_img.bottom - 20)))
+
+        # Quadro de resumo completo da campanha
+        taxa = (autonomos_total / atendidos_total * 100.0) if atendidos_total > 0 else 0.0
+        if taxa >= 75.0:
+            nivel = "BARISTA FLUENTE EM LIBRAS"
+        elif taxa >= 45.0:
+            nivel = "ATENDENTE INCLUSIVO"
+        else:
+            nivel = "APRENDIZ DEDICADO"
+
+        box_res = pygame.Rect(box_img.right + 42, 322, card.right - box_img.right - 132, 280)
+        pygame.draw.rect(tela, p["parede"], box_res)
+        pygame.draw.rect(tela, p["card_borda"], box_res, 3)
+
+        linhas_res = [
+            (f"Classificacao: {nivel}", p["verde"]),
+            (f"Pontuacao Final: {score} pts   (Recorde: {melhor_score} pts)", cor_t),
+            (f"Total de clientes atendidos: {atendidos_total}", cor_t),
+            (f"Autonomia plena (sem Mural/dica): {taxa:.0f}% ({autonomos_total} clientes)", cor_t),
+            (f"Tempo medio de reconhecimento: {tempo_medio:.1f}s por sinal", cor_t),
+        ]
+        for idx, (texto_l, cor_l) in enumerate(linhas_res):
+            t_l = self.f_hud.render(texto_l, True, cor_l)
+            tela.blit(t_l, (box_res.x + 28, box_res.y + 26 + idx * 48))
+
+        # Mensagem educativa final
+        msg_final = self.f_corpo.render(
+            "Agora voce reconhece 8 sinais essenciais de Libras para acolher pessoas surdas no dia a dia!",
+            True,
+            cor_t,
+        )
+        tela.blit(msg_final, msg_final.get_rect(center=(LARGURA // 2, 668)))
+
+        # Botoes claros: Menu Principal (padrao) ou Jogar Novamente
+        self._desenhar_botao(
+            tela,
+            "voltar_menu",
+            "MENU PRINCIPAL  [ENTER / ESC]",
+            pygame.Rect(LARGURA // 2 - 460, 748, 440, 82),
+            p["verde"],
+            (255, 255, 255),
+            fonte=self.f_hud,
+        )
+        self._desenhar_botao(
+            tela,
+            "jogar_novamente",
+            "JOGAR NOVAMENTE  [R]",
+            pygame.Rect(LARGURA // 2 + 20, 748, 440, 82),
+            p["dourado"],
+            p["texto_escuro"],
+            fonte=self.f_hud,
+        )
+
+        rod = self.f_peq.render(
+            "Obrigado por jogar Expresso Libras! Pressione [ENTER] ou [ESC] para voltar ao menu.",
+            True,
+            cor_t,
+        )
+        tela.blit(rod, rod.get_rect(center=(LARGURA // 2, 924)))
