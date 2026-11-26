@@ -66,7 +66,7 @@ class GerenciadorFases:
             ("suco", "SUCO", 960, 865, "suco"),
             ("lixeira", "DESCARTAR", 1290, 865, None),
             ("caixa", "CONTA", 1665, 545, "pagar"),
-            ("banheiro", "BANHEIRO", 1665, 735, "banheiro"),
+            ("banheiro", "CHAVE WC", 1665, 735, "banheiro"),
             ("mural", "MURAL [TAB]", 1665, 910, None),
         ]
         self.grupo_estacoes.empty()
@@ -167,8 +167,15 @@ class GerenciadorFases:
 
         slot = random.choice(livres)
         sinais = cfg["sinais_permitidos"]
+        consumiveis = [s for s in sinais if s in ("cafe", "agua", "bolo", "suco")]
         qtd_pedidos = 2 if random.random() < cfg["chance_pedido_duplo"] else 1
         pedidos = random.sample(sinais, k=min(qtd_pedidos, len(sinais)))
+
+        # Quem pede CONTA/PAGAR sempre consome um item antes de pagar
+        if "pagar" in pedidos:
+            outros = [s for s in pedidos if s != "pagar" and s in consumiveis]
+            item_consumo = outros[0] if outros else random.choice(consumiveis)
+            pedidos = [item_consumo, "pagar"]
 
         mostrar_legenda = self.clientes_gerados < cfg["legendas_iniciais"]
         novo = Cliente(
