@@ -112,6 +112,11 @@ class InterfaceHUD:
         )
         f_usar = fonte or self.f_sub
         lbl = f_usar.render(texto, True, cor_txt)
+        max_w = ret_draw.width - 20
+        if lbl.get_width() > max_w and max_w > 10:
+            escala = max_w / lbl.get_width()
+            nova_h = max(1, int(round(lbl.get_height() * escala)))
+            lbl = pygame.transform.smoothscale(lbl, (max_w, nova_h))
         tela.blit(lbl, lbl.get_rect(center=ret_draw.center))
         self.botoes_clicaveis[chave] = ret
 
@@ -334,10 +339,10 @@ class InterfaceHUD:
 
         # Vidas (4 coracoes)
         lbl_vidas = self.f_hud.render("VIDAS:", True, p["texto_claro"])
-        tela.blit(lbl_vidas, (1010, 26))
+        tela.blit(lbl_vidas, (960, 26))
         for i in range(VIDAS_INICIAIS):
             cor = p["vermelho"] if i < vidas else (70, 86, 80)
-            cx = 1116 + i * 36
+            cx = 1072 + i * 36
             cy = 40
             pygame.draw.circle(tela, cor, (cx - 6, cy - 3), 8)
             pygame.draw.circle(tela, cor, (cx + 6, cy - 3), 8)
@@ -351,7 +356,7 @@ class InterfaceHUD:
                 tela,
                 "alternar_som",
                 lbl_som,
-                pygame.Rect(LARGURA - 636, 17, 168, 48),
+                pygame.Rect(LARGURA - 684, 17, 184, 48),
                 p["rodape"],
                 p["texto_claro"],
                 fonte=self.f_peq,
@@ -360,7 +365,7 @@ class InterfaceHUD:
                 tela,
                 "abrir_mural",
                 "MURAL [TAB]",
-                pygame.Rect(LARGURA - 454, 17, 188, 48),
+                pygame.Rect(LARGURA - 486, 17, 200, 48),
                 p["verde"],
                 (255, 255, 255),
                 fonte=self.f_peq,
@@ -370,7 +375,7 @@ class InterfaceHUD:
                 tela,
                 "alternar_tela",
                 lbl_tela,
-                pygame.Rect(LARGURA - 252, 17, 226, 48),
+                pygame.Rect(LARGURA - 272, 17, 248, 48),
                 p["dourado"],
                 p["texto_escuro"],
                 fonte=self.f_peq,
@@ -438,7 +443,7 @@ class InterfaceHUD:
             tela,
             "jogar",
             "JOGAR  [ENTER]",
-            pygame.Rect(LARGURA // 2 - 270, 666, 540, 74),
+            pygame.Rect(LARGURA // 2 - 310, 666, 620, 74),
             p["verde"],
             (255, 255, 255),
         )
@@ -446,7 +451,7 @@ class InterfaceHUD:
             tela,
             "instrucoes",
             "COMO JOGAR  [I]",
-            pygame.Rect(LARGURA // 2 - 270, 756, 260, 66),
+            pygame.Rect(LARGURA // 2 - 310, 756, 300, 66),
             p["azul"],
             (255, 255, 255),
             fonte=self.f_hud,
@@ -456,7 +461,7 @@ class InterfaceHUD:
             tela,
             "alternar_tela",
             lbl_tela,
-            pygame.Rect(LARGURA // 2 + 10, 756, 260, 66),
+            pygame.Rect(LARGURA // 2 + 10, 756, 300, 66),
             p["dourado"],
             p["texto_escuro"],
             fonte=self.f_hud,
