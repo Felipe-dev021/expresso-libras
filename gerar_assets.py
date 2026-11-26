@@ -12,7 +12,7 @@ import wave
 
 import pygame
 
-from config import PASTA_DATA
+from config import PASTA_DATA, SINAIS_LIBRAS
 
 
 def _garantir_pasta() -> None:
@@ -481,14 +481,48 @@ def gerar_audios() -> None:
     _escrever_wav("musica.wav", musica, taxa)
 
 
+def gerar_fallback_sinais_libras() -> None:
+    """Garante que todos os arquivos sinal_<id>.png existam em data/.
+
+    Preserva ilustracoes ja existentes e gera cartoes de fallback nitidos
+    (256x256) apenas para eventuais arquivos ausentes.
+    """
+    fonte_tit = pygame.font.SysFont("segoeui", 28, bold=True)
+    fonte_dica = pygame.font.SysFont("segoeui", 16, bold=True)
+    for sid, info in SINAIS_LIBRAS.items():
+        destino = os.path.join(PASTA_DATA, f"sinal_{sid}.png")
+        if os.path.exists(destino):
+            continue
+        surf = pygame.Surface((256, 256), pygame.SRCALPHA)
+        surf.fill((244, 235, 220))
+        pygame.draw.rect(surf, info["cor"], (8, 8, 240, 240), width=6)
+        pygame.draw.circle(surf, info["cor"], (128, 108), 54)
+        inicial = fonte_tit.render(info["nome"].split("/")[0].strip(), True, (255, 255, 255))
+        if inicial.get_width() > 96:
+            esc = 96 / inicial.get_width()
+            inicial = pygame.transform.smoothscale(
+                inicial, (96, max(1, int(inicial.get_height() * esc)))
+            )
+        surf.blit(inicial, inicial.get_rect(center=(128, 108)))
+        dica = fonte_dica.render(info["dica_curta"], True, (36, 26, 22))
+        if dica.get_width() > 224:
+            esc = 224 / dica.get_width()
+            dica = pygame.transform.smoothscale(
+                dica, (224, max(1, int(dica.get_height() * esc)))
+            )
+        surf.blit(dica, dica.get_rect(center=(128, 204)))
+        pygame.image.save(surf, destino)
+
+
 def gerar_todos_assets() -> None:
-    """Executa a geracao completa de sprites 2.5D e audios WAV em data/."""
+    """Executa a geracao completa de sprites 2.5D, fallback de Libras e audios WAV."""
     pygame.init()
     _garantir_pasta()
     gerar_atendente()
     gerar_clientes()
     gerar_estacoes()
     gerar_itens()
+    gerar_fallback_sinais_libras()
     gerar_audios()
 
 
