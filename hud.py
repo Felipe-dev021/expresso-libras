@@ -559,18 +559,20 @@ class InterfaceHUD:
             t = self.f_corpo.render(linha, True, cor_t)
             tela.blit(t, t.get_rect(center=(LARGURA // 2, 286 + idx * 38)))
 
-        novos = cfg.get("sinais_novos") or cfg["sinais_permitidos"][:4]
+        novos = cfg.get("sinais_novos") or cfg["sinais_permitidos"]
         lbl_sec = (
             "APRENDA OS SINAIS DESTA FASE ANTES DE ABRIR O BALCAO:"
             if cfg.get("sinais_novos")
-            else "REVISAO RAPIDA — TODOS OS SINAIS ATIVOS NESTA FASE:"
+            else "REVISAO COMPLETA — TODOS OS SINAIS ATIVOS NESTA FASE:"
         )
         t_sec = self.f_hud.render(lbl_sec, True, p["verde"])
         tela.blit(t_sec, t_sec.get_rect(center=(LARGURA // 2, 412)))
 
         qtd = len(novos)
-        larg_box = 340
-        esp = 28
+        esp = 20 if qtd > 4 else 28
+        larg_disponivel = card.width - 110
+        larg_box = min(340, (larg_disponivel - (qtd - 1) * esp) // max(1, qtd))
+        tam_frame = min(188, larg_box - 54)
         larg_total = qtd * larg_box + (qtd - 1) * esp
         start_x = (LARGURA - larg_total) // 2
 
@@ -584,12 +586,22 @@ class InterfaceHUD:
             pygame.draw.rect(tela, info["cor"], box, 3)
 
             lbl_n = self.f_hud.render(info["nome"], True, (255, 255, 255))
+            if lbl_n.get_width() > larg_box - 16:
+                esc = (larg_box - 16) / lbl_n.get_width()
+                lbl_n = pygame.transform.smoothscale(
+                    lbl_n, (larg_box - 16, max(1, int(lbl_n.get_height() * esc)))
+                )
             tela.blit(lbl_n, lbl_n.get_rect(center=(box.centerx, 476)))
 
-            frame = libras.obter_frame(sid, tamanho=188)
+            frame = libras.obter_frame(sid, tamanho=tam_frame)
             tela.blit(frame, frame.get_rect(center=(box.centerx, 608)))
 
             dica = self.f_peq.render(info["dica_curta"], True, cor_t)
+            if dica.get_width() > larg_box - 16:
+                esc = (larg_box - 16) / dica.get_width()
+                dica = pygame.transform.smoothscale(
+                    dica, (larg_box - 16, max(1, int(dica.get_height() * esc)))
+                )
             tela.blit(dica, dica.get_rect(center=(box.centerx, 748)))
 
         self._desenhar_botao(
