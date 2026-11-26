@@ -88,6 +88,9 @@ class JogoExpressoLibras:
         self.estado = "menu"
         self.score = 0
         self.score_inicio_fase = 0
+        self.campanha_atendidos = 0
+        self.campanha_autonomos = 0
+        self.bloqueio_tecla_tela = 0.0
         self.vidas = VIDAS_INICIAIS
         self.mensagem_barra = ""
         self.tempo_mensagem = 0.0
@@ -171,6 +174,8 @@ class JogoExpressoLibras:
         """Comeca um novo jogo a partir da fase 1."""
         self.score = 0
         self.score_inicio_fase = 0
+        self.campanha_atendidos = 0
+        self.campanha_autonomos = 0
         self.vidas = VIDAS_INICIAIS
         self._preparar_fase(0)
 
@@ -250,7 +255,11 @@ class JogoExpressoLibras:
             if estacao.sinal_associado:
                 self.jogador.pegar_item(estacao.sinal_associado)
                 self._tocar("pegar")
-                nome = SINAIS_LIBRAS[estacao.sinal_associado]["nome"].split("/")[0].strip()
+                nome = (
+                    "CHAVE WC"
+                    if estacao.sinal_associado == "banheiro"
+                    else SINAIS_LIBRAS[estacao.sinal_associado]["nome"].split("/")[0].strip()
+                )
                 self.particulas.emitir_explosao(
                     estacao.rect.centerx, estacao.rect.centery, p["destaque"], 10
                 )
@@ -335,7 +344,9 @@ class JogoExpressoLibras:
                 )
 
     def _finalizar_fase_com_vitoria(self) -> None:
-        """Persiste estatisticas e avanca para a tela de vitoria correspondente."""
+        """Persiste estatisticas e avanca para a tela de vitoria ou finalizacao."""
+        self.campanha_atendidos += self.fases.clientes_atendidos
+        self.campanha_autonomos += self.fases.clientes_sem_mural
         self.save.registrar_fase(
             numero_fase=self.fases.numero_fase,
             score=self.score,
@@ -345,6 +356,7 @@ class JogoExpressoLibras:
             erros_sinal=self.fases.erros_por_sinal,
         )
         self._tocar("vitoria")
+        self.bloqueio_tecla_tela = 0.7
         if self.fases.numero_fase >= self.fases.total_fases:
             self.estado = "vitoria_final"
         else:
@@ -465,12 +477,16 @@ class JogoExpressoLibras:
                     self.estado = "jogando"
 
             elif self.estado == "vitoria_fase":
+                if self.bloqueio_tecla_tela > 0:
+                    continue
                 if tecla in (pygame.K_RETURN, pygame.K_SPACE):
                     self._preparar_fase(self.fases.indice_fase + 1)
                 elif tecla == pygame.K_ESCAPE:
                     self.estado = "menu"
 
             elif self.estado == "derrota":
+                if self.bloqueio_tecla_tela > 0:
+                    continue
                 if tecla in (pygame.K_r, pygame.K_RETURN, pygame.K_SPACE):
                     self._preparar_fase(self.fases.indice_fase, reiniciar=True)
                     self.estado = "jogando"
@@ -478,15 +494,19 @@ class JogoExpressoLibras:
                     self.estado = "menu"
 
             elif self.estado == "vitoria_final":
-                if tecla in (pygame.K_RETURN, pygame.K_SPACE):
-                    self._iniciar_nova_partida()
-                elif tecla == pygame.K_ESCAPE:
+                if self.bloqueio_tecla_tela > 0:
+                    continue
+                if tecla in (pygame.K_RETURN, pygame.K_ESCAPE):
                     self.estado = "menu"
+                elif tecla == pygame.K_r:
+                    self._iniciar_nova_partida()
 
     def _atualizar(self, dt: float) -> None:
         """Atualiza animacoes, jogador, clientes e particulas no estado ativo."""
         self.hud.definir_mouse_canvas(self._converter_mouse(pygame.mouse.get_pos()))
         self.libras.atualizar(dt)
+        if self.bloqueio_tecla_tela > 0:
+            self.bloqueio_tecla_tela = max(0.0, self.bloqueio_tecla_tela - dt)
 
         if self.estado != "jogando":
             return
@@ -508,6 +528,7 @@ class JogoExpressoLibras:
             self._tocar("erro")
             self._definir_mensagem("Um cliente desistiu da fila! Atencao a paciencia.")
             if self.vidas <= 0:
+                self.bloqueio_tecla_tela = 0.7
                 self.estado = "derrota"
 
         # Vapor suave saindo da maquina de cafe (estacao na esquerda)
@@ -580,9 +601,20 @@ class JogoExpressoLibras:
         elif self.estado == "pausa":
             self._desenhar_cena_jogo(limpar_botoes_hud=False)
             self.hud.desenhar_pausa(self.canvas, self.tela_cheia)
-        elif self.estado in ("vitoria_fase", "derrota", "vitoria_final"):
+        elif self.estado in ("vitoria_fase", "derrota"):
             self._desenhar_cena_jogo(limpar_botoes_hud=False)
             self.hud.desenhar_resultado(self.canvas, self.estado, self.fases, self.score)
+        elif self.estado == "vitoria_final":
+            self._desenhar_cena_jogo(limpar_botoes_hud=False)
+            self.hud.desenhar_finalizacao(
+                self.canvas,
+                self.libras,
+                self.score,
+                self.save.dados["melhor_score"],
+                self.campanha_atendidos,
+                self.campanha_autonomos,
+                self.fases.tempo_medio_reacao(),
+            )
 
         self._apresentar_canvas()
 
