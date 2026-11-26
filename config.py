@@ -49,7 +49,6 @@ BONUS_COMBO = 25
 PENALIDADE_ERRO_PACIENCIA = 0.12
 LIMIAR_DICA_AUTOMATICA = 0.35
 
-# Paleta Starbucks (verde floresta #1E3932, verde icone #00704A, creme e nogueira)
 PALETA_PADRAO = {
     "fundo": (22, 42, 36),
     "parede": (245, 242, 235),
