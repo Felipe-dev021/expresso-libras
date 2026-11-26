@@ -317,18 +317,21 @@ def gerar_estacoes() -> None:
     pygame.draw.rect(s, (203, 162, 88), (98, 204, 80, 20))
     _salvar_supersampled(s, "estacao_caixa.png", (138, 150))
 
-    # 6. Totem Banheiro (verde floresta + dourado)
+    # 6. Porta-chaves do Banheiro 2.5D (suporte verde floresta + chave dourada)
     s = _criar_surface(276, 300)
-    _sombra_chao(s, 138, 266, 92, 20)
-    pygame.draw.rect(s, nogueira, (122, 148, 32, 114))
-    pygame.draw.rect(s, borda, (122, 148, 32, 114), 5)
-    pygame.draw.rect(s, (18, 38, 32), (50, 52, 186, 116))
-    pygame.draw.rect(s, verde_esc, (38, 40, 186, 116))
-    pygame.draw.rect(s, (203, 162, 88), (38, 40, 186, 116), 6)
-    pygame.draw.circle(s, (248, 246, 240), (96, 74), 12)
-    pygame.draw.rect(s, (248, 246, 240), (84, 92, 24, 42))
-    pygame.draw.circle(s, (248, 246, 240), (166, 74), 12)
-    pygame.draw.polygon(s, (248, 246, 240), [(166, 92), (146, 134), (186, 134)])
+    _sombra_chao(s, 138, 266, 98, 20)
+    _bloco_25d(s, 44, 152, 188, 36, 80, quartzo, nogueira, borda)
+    # Painel porta-chaves no balcao
+    pygame.draw.rect(s, verde_esc, (64, 34, 148, 122))
+    pygame.draw.rect(s, (203, 162, 88), (64, 34, 148, 122), 6)
+    # Gancho + chave dourada pendurada + tag WC verde
+    pygame.draw.circle(s, (203, 162, 88), (138, 56), 8)
+    pygame.draw.circle(s, (238, 198, 86), (114, 92), 20, 7)
+    pygame.draw.rect(s, (238, 198, 86), (130, 87, 46, 10))
+    pygame.draw.rect(s, (238, 198, 86), (156, 97, 8, 12))
+    pygame.draw.rect(s, (238, 198, 86), (168, 97, 8, 16))
+    pygame.draw.rect(s, verde_sb, (88, 118, 100, 26))
+    pygame.draw.rect(s, (203, 162, 88), (88, 118, 100, 26), 3)
     _salvar_supersampled(s, "estacao_banheiro.png", (138, 150))
 
     # 7. Mural de Libras em cavalete nogueira + moldura verde
@@ -399,11 +402,23 @@ def gerar_itens() -> None:
     pygame.draw.rect(s, borda, (24, 16, 56, 74), 5)
     _salvar_supersampled(s, "item_pagar.png", (52, 52))
 
-    # Placa Banheiro
+    # Chave do Banheiro (chave dourada com chaveiro verde)
     s = _criar_surface(104, 104)
-    pygame.draw.rect(s, (30, 57, 50), (16, 22, 72, 60))
-    pygame.draw.rect(s, (203, 162, 88), (16, 22, 72, 60), 5)
-    pygame.draw.polygon(s, (248, 246, 240), [(36, 52), (66, 36), (66, 68)])
+    # Chaveiro verde Starbucks
+    pygame.draw.rect(s, verde_sb, (10, 40, 26, 24), border_radius=5)
+    pygame.draw.rect(s, borda, (10, 40, 26, 24), 4, border_radius=5)
+    # Argola e cabeca da chave dourada
+    pygame.draw.circle(s, (238, 196, 78), (46, 52), 16)
+    pygame.draw.circle(s, borda, (46, 52), 16, 4)
+    pygame.draw.circle(s, (248, 246, 240), (46, 52), 6)
+    pygame.draw.circle(s, borda, (46, 52), 6, 3)
+    # Haste e dentes da chave
+    pygame.draw.rect(s, (238, 196, 78), (58, 46, 36, 12))
+    pygame.draw.rect(s, borda, (58, 46, 36, 12), 4)
+    pygame.draw.rect(s, (238, 196, 78), (72, 56, 8, 14))
+    pygame.draw.rect(s, borda, (72, 56, 8, 14), 3)
+    pygame.draw.rect(s, (238, 196, 78), (84, 56, 8, 18))
+    pygame.draw.rect(s, borda, (84, 56, 8, 18), 3)
     _salvar_supersampled(s, "item_banheiro.png", (52, 52))
 
 
