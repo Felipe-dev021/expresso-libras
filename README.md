@@ -1,9 +1,9 @@
 # Expresso Libras — Café Inclusivo
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)
-![Pygame-CE](https://img.shields.io/badge/Pygame--CE-2.5%2B-00704A?style=flat-square)
-![Resolução](https://img.shields.io/badge/Full%20HD-1920x1080-1E3932?style=flat-square)
-![Tema P2](https://img.shields.io/badge/Tema%2007-Acessibilidade%20e%20Inclus%C3%A3o-CBA258?style=flat-square)
+![Python](https://img.shields.io/static/v1?label=Python&message=3.10%2B&color=3776AB&style=flat-square&logo=python&logoColor=white)
+![Pygame-CE](https://img.shields.io/static/v1?label=Pygame-CE&message=2.5%2B&color=00704A&style=flat-square)
+![Resolucao](https://img.shields.io/static/v1?label=Full%20HD&message=1920x1080&color=1E3932&style=flat-square)
+![Tema P2](https://img.shields.io/static/v1?label=Tema%2007&message=Acessibilidade%20e%20Inclusao&color=CBA258&style=flat-square)
 
 **Expresso Libras** é um *serious game* 2.5D desenvolvido em **Python + Pygame** para a avaliação **P2** da disciplina de **Desenvolvimento de Jogos Digitais** (Bacharelado em Engenharia de Software — 7º período, Univassouras Campus Maricá).
 
